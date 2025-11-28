@@ -6,7 +6,7 @@ import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.window.Window;
 
 public abstract class ICMazeArea extends Area {
-    public final static float DEFAULT_SCALE_FACTOR = 11.f;
+    public final static float DEFAULT_SCALE_FACTOR = 13.f;
     private final String behaviorName;
     private float cameraScaleFactor = DEFAULT_SCALE_FACTOR;
 
