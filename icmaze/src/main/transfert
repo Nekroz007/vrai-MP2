@@ -1,0 +1,8 @@
+ cp ~/shared/Cours/PROG/hiver/mini-projets/2025/II/ic-maze-2025/icmaze/src/main/resources/images/sprites/icmaze/player.pickaxe.png resources/images/sprites/icmaze/.
+
+
+cp ~/shared/Cours/PROG/hiver/mini-projets/2025/II/ic-maze-2025/icmaze/src/main/resources/images/sprites/icmaze/player.png resources/images/sprites/icmaze/.
+
+cp ~/shared/Cours/PROG/hiver/mini-projets/2025/II/ic-maze-2025/icmaze/src/main/resources/images/sprites/icmaze/chained_wood_*  resources/images/sprites/icmaze/.
+
+cp ~/shared/Cours/PROG/hiver/mini-projets/2025/II/ic-maze-2025/icmaze/src/main/resources/images/sprites/icmaze/boss.png  resources/images/sprites/icmaze/.
