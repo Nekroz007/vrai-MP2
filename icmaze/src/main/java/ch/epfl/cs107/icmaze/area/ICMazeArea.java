@@ -1,14 +1,19 @@
 package ch.epfl.cs107.icmaze.area;
 
-import ch.epfl.cs107.icmaze.ICMazeBehavior;
 import ch.epfl.cs107.play.areagame.area.Area;
 import ch.epfl.cs107.play.io.FileSystem;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.window.Window;
 
 public abstract class ICMazeArea extends Area {
-    public final static float DEFAULT_SCALE_FACTOR = 13.f;
+    public final static float DEFAULT_SCALE_FACTOR = 11.f;
+    private final String behaviorName;
     private float cameraScaleFactor = DEFAULT_SCALE_FACTOR;
+
+
+    protected ICMazeArea(String behaviorName) {
+        this.behaviorName = behaviorName;
+    }
     /**
      * Area specific callback to initialise the instance
      */
@@ -28,7 +33,7 @@ public abstract class ICMazeArea extends Area {
     @Override
     public boolean begin(Window window, FileSystem fileSystem) {
         if (super.begin(window, fileSystem)) {
-            setBehavior(new ICMazeBehavior(window, getTitle()));
+            setBehavior(new ICMazeBehavior(window, behaviorName));
             createArea();
             return true;
         }

@@ -6,7 +6,9 @@ import ch.epfl.cs107.play.engine.actor.Foreground;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 
 public class Spawn extends ICMazeArea {
-
+    public Spawn() {
+        super("SmallArea");
+    }
     /**
      * @return the player's spawn position in the area
      */
@@ -17,12 +19,12 @@ public class Spawn extends ICMazeArea {
 
     @Override
     protected void createArea() {
-        registerActor(new Background(this));
-        registerActor(new Foreground(this));
+        registerActor(new Background(this, "SmallArea"));
+        registerActor(new Foreground(this, null,"SmallArea"));
     }
 
     @Override
     public String getTitle() {
-        return "icmaz/Spawn";
+        return "icmaze/Spawn";
     }
 }

@@ -1,4 +1,4 @@
-package ch.epfl.cs107.icmaze;
+package ch.epfl.cs107.icmaze.area;
 
 import ch.epfl.cs107.play.areagame.actor.Interactable;
 import ch.epfl.cs107.play.areagame.area.AreaBehavior;
@@ -27,11 +27,9 @@ public class ICMazeBehavior extends AreaBehavior{
     public enum ICMazeCellType {
         //https://stackoverflow.com/questions/25761438/understanding-bufferedimage-getrgb-output-values
         NULL(0, false),
-        WALL(-16777216, false),
-        IMPASSABLE(-8750470, false),
-        INTERACT(-256, true),
-        DOOR(-195580, true),
-        WALKABLE(-1, true),
+        GROUND(-16777216, true),
+        WALL(-14112955, false),
+        HOLE(-65536, true),
         ;
 
         final int type;
@@ -79,7 +77,17 @@ public class ICMazeBehavior extends AreaBehavior{
 
         @Override
         protected boolean canEnter(Interactable entity) {
-            return type.isWalkable;
+            if (!this.type.isWalkable) {
+                return false;
+            }
+            if (entity.takeCellSpace()) {
+                for (Interactable existingEntity : entities) {
+                    if (existingEntity.takeCellSpace()) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         @Override

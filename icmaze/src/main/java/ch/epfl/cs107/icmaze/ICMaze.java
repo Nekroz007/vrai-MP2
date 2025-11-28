@@ -1,5 +1,6 @@
 package ch.epfl.cs107.icmaze;
 
+import ch.epfl.cs107.icmaze.actor.ICMazePlayer;
 import ch.epfl.cs107.icmaze.area.ICMazeArea;
 import ch.epfl.cs107.icmaze.area.maps.BossArea;
 import ch.epfl.cs107.icmaze.area.maps.Spawn;
@@ -11,7 +12,7 @@ import ch.epfl.cs107.play.window.Window;
 
 public class ICMaze extends AreaGame {
     private final String[] areas = {"icmaze/Spawn", "icmaze/Boss"};
-    private GhostPlayer player;
+    private ICMazePlayer player;
     private int areaIndex;
 
     /**
@@ -43,7 +44,7 @@ public class ICMaze extends AreaGame {
      */
     @Override
     public void update(float deltaTime) {
-        if (player.isWeak())
+        //if (player.isWeak())
             switchArea();
         super.update(deltaTime);
     }
@@ -65,9 +66,12 @@ public class ICMaze extends AreaGame {
     private void initArea(String areaKey) {
         ICMazeArea area = (ICMazeArea) setCurrentArea(areaKey, true);
         DiscreteCoordinates coords = area.getPlayerSpawnPosition();
+        /*
         player = new GhostPlayer(area, Orientation.DOWN, coords, "ghost.1");
         player.enterArea(area, coords);
         player.centerCamera();
+
+         */
     }
 
     /**
@@ -75,10 +79,12 @@ public class ICMaze extends AreaGame {
      * the player is healed when moving to a new area
      */
     private void switchArea() {
-        player.leaveArea();
+        /*player.leaveArea();
         areaIndex = (areaIndex == 0) ? 1 : 0;
         ICMazeArea currentArea = (ICMazeArea) setCurrentArea(areas[areaIndex], false);
         player.enterArea(currentArea, currentArea.getPlayerSpawnPosition());
         player.strengthen();
+
+         */
     }
 }
