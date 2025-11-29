@@ -12,7 +12,7 @@ import ch.epfl.cs107.play.window.Canvas;
 import java.util.List;
 
 public class Heart extends ICMazeCollectable{
-   private Animation animation;
+   private final Animation animation;
 
     public Heart (Area area, Orientation orientation, DiscreteCoordinates position) {
         super(area, orientation, position);

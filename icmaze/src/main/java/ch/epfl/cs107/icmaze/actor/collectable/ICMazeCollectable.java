@@ -14,6 +14,14 @@ public abstract class ICMazeCollectable extends CollectableAreaEntity {
         super(area, orientation, position);
     }
 
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+
+        if (isCollected()) {
+            getOwnerArea().unregisterActor(this);
+        }
+    }
+
     public boolean takeCellSpace() {
         return false;
     }
