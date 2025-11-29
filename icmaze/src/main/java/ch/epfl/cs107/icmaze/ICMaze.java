@@ -1,6 +1,7 @@
 package ch.epfl.cs107.icmaze;
 
 import ch.epfl.cs107.icmaze.actor.ICMazePlayer;
+import ch.epfl.cs107.icmaze.actor.collectable.Pickaxe;
 import ch.epfl.cs107.icmaze.area.ICMazeArea;
 import ch.epfl.cs107.icmaze.area.maps.BossArea;
 import ch.epfl.cs107.icmaze.area.maps.Spawn;
