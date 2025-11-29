@@ -44,7 +44,6 @@ public class ICMaze extends AreaGame {
      */
     @Override
     public void update(float deltaTime) {
-        //if (player.isWeak())
             switchArea();
         super.update(deltaTime);
     }
@@ -66,12 +65,9 @@ public class ICMaze extends AreaGame {
     private void initArea(String areaKey) {
         ICMazeArea area = (ICMazeArea) setCurrentArea(areaKey, true);
         DiscreteCoordinates coords = area.getPlayerSpawnPosition();
-        /*
-        player = new GhostPlayer(area, Orientation.DOWN, coords, "ghost.1");
+        player = new ICMazePlayer(area, Orientation.DOWN, coords);
         player.enterArea(area, coords);
         player.centerCamera();
-
-         */
     }
 
     /**

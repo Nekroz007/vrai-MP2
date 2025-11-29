@@ -1,6 +1,7 @@
 package ch.epfl.cs107.icmaze.actor;
 
 
+import ch.epfl.cs107.icmaze.KeyBindings;
 import ch.epfl.cs107.play.areagame.area.Area;
 import ch.epfl.cs107.play.engine.actor.OrientedAnimation;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
@@ -34,14 +35,20 @@ public class ICMazePlayer extends ICMazeActor{
     }
 
     public void update(float deltaTime) {
+        super.update(deltaTime);
         if (state == playerStates.IDLE) {
             Keyboard keyboard = getOwnerArea().getKeyboard();
-            moveIfPressed(LEFT, keyboard.get(Keyboard.LEFT));
-            moveIfPressed(UP, keyboard.get(Keyboard.UP));
-            moveIfPressed(RIGHT, keyboard.get(Keyboard.RIGHT));
-            moveIfPressed(Orientation.DOWN, keyboard.get(Keyboard.DOWN));
+            moveIfPressed(Orientation.LEFT, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.left()));
+            moveIfPressed(Orientation.UP, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.up()));
+            moveIfPressed(Orientation.RIGHT, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.right()));
+            moveIfPressed(Orientation.DOWN, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.down()));
         }
-        super.update(deltaTime);
+
+        if (isDisplacementOccurs()) {
+            animation.update(deltaTime);
+        } else {
+            animation.reset();
+        }
     }
 
     @Override
@@ -53,6 +60,9 @@ public class ICMazePlayer extends ICMazeActor{
         return true;
     }
 
+    public void centerCamera() {
+        getOwnerArea().setViewCandidate(this);
+    }
 
     private void moveIfPressed(Orientation orientation, Button b) {
         if (b.isDown()) {
