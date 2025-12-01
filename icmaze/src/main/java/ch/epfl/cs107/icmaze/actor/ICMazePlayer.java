@@ -1,8 +1,8 @@
 package ch.epfl.cs107.icmaze.actor;
 
-
 import ch.epfl.cs107.icmaze.KeyBindings;
 import ch.epfl.cs107.icmaze.actor.collectable.Heart;
+import ch.epfl.cs107.icmaze.actor.collectable.Key;
 import ch.epfl.cs107.icmaze.actor.collectable.Pickaxe;
 import ch.epfl.cs107.icmaze.handler.ICMazeInteractionVisitor;
 import ch.epfl.cs107.play.areagame.actor.Interactable;
@@ -16,7 +16,7 @@ import ch.epfl.cs107.play.window.Button;
 import ch.epfl.cs107.play.window.Canvas;
 import ch.epfl.cs107.play.window.Keyboard;
 
-import java.awt.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,69 +24,90 @@ import static ch.epfl.cs107.play.math.Orientation.*;
 
 public class ICMazePlayer extends ICMazeActor implements Interactor {
     private final static int MOVE_DURATION = 8;
-    final Vector anchor = new Vector(0,0);
-    final Orientation[] orders = {DOWN,RIGHT,UP,LEFT};
+    private final Vector anchor = new Vector(0, 0);
+    private final Orientation[] orders = {DOWN, RIGHT, UP, LEFT};
     private final OrientedAnimation animation;
-    private playerStates state;
     private final ICMazePlayerInteractionHandler handler = new ICMazePlayerInteractionHandler();
 
-    public ICMazePlayer(Area area,Orientation orientation, DiscreteCoordinates position) {
+    private enum State {IDLE, MOVING, INTERACTING}
+    private State state = State.IDLE;
+    private Portal currentPortal = null;
+    private final List<Integer> collectedKeys = new ArrayList<>();
+
+    public ICMazePlayer(Area area, Orientation orientation, DiscreteCoordinates position) {
         super(area, orientation, position);
-        this.state = playerStates.IDLE;
-        this.animation = new OrientedAnimation("icmaze/player", 4,this, anchor, orders,
+        this.state = State.IDLE;
+        this.animation = new OrientedAnimation("icmaze/player", 4, this, anchor, orders,
                 4, 1, 2, 16, 32, true);
     }
 
-    public enum playerStates {
-        IDLE,
-        INTERACTING,
+    @Override
+    public void acceptInteraction(ch.epfl.cs107.play.areagame.handler.AreaInteractionVisitor v, boolean isCellInteraction) {
+        ((ICMazeInteractionVisitor) v).interactWith(this, isCellInteraction);
     }
 
+    @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        if (state == playerStates.IDLE) {
-            Keyboard keyboard = getOwnerArea().getKeyboard();
-            moveIfPressed(Orientation.LEFT, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.left()));
-            moveIfPressed(Orientation.UP, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.up()));
-            moveIfPressed(Orientation.RIGHT, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.right()));
-            moveIfPressed(Orientation.DOWN, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.down()));
+        Keyboard keyboard = getOwnerArea().getKeyboard();
+        Button interactKey = keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.interact());
+
+        // Gestion état INTERACTING
+        if (state == State.IDLE && interactKey.isPressed()) state = State.INTERACTING;
+        if (state == State.INTERACTING && !interactKey.isDown()) state = State.IDLE;
+
+        // Déplacements
+        if (state == State.IDLE) {
+            moveIfPressed(LEFT, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.left()));
+            moveIfPressed(UP, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.up()));
+            moveIfPressed(RIGHT, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.right()));
+            moveIfPressed(DOWN, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.down()));
         }
 
-        if (isDisplacementOccurs()) {
-            animation.update(deltaTime);
-        } else {
-            animation.reset();
-        }
+        if (isDisplacementOccurs()) animation.update(deltaTime);
+        else animation.reset();
+    }
+
+    public void collectKey(int keyId) {
+        if (!collectedKeys.contains(keyId)) collectedKeys.add(keyId);
     }
 
     @Override
-    public void draw(Canvas canvas) {
-        animation.draw(canvas);
-    }
-    @Override
-    public boolean takeCellSpace() {
-        return true;
-    }
     public void interactWith(Interactable other, boolean isCellInteraction) {
         other.acceptInteraction(handler, isCellInteraction);
     }
 
+    @Override
+    public boolean takeCellSpace() {
+        return true;
+    }
+
+    public Portal getCurrentPortal() {
+        return currentPortal;
+    }
+
+    @Override
     public List<DiscreteCoordinates> getCurrentCells() {
         return Collections.singletonList(getCurrentMainCellCoordinates());
     }
+
+    @Override
     public List<DiscreteCoordinates> getFieldOfViewCells() {
         return Collections.singletonList(getCurrentMainCellCoordinates().jump(getOrientation().toVector()));
     }
 
+    public void resetPortal() {
+        currentPortal = null;
+    }
+
+    @Override
     public boolean wantsCellInteraction() {
         return true;
     }
+
+    @Override
     public boolean wantsViewInteraction() {
-        if (state == playerStates.INTERACTING) {
-            return true;
-        } else {
-            return false;
-        }
+        return state == State.INTERACTING;
     }
 
     public void centerCamera() {
@@ -94,28 +115,55 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     }
 
     private void moveIfPressed(Orientation orientation, Button b) {
-        if (b.isDown()) {
-            if (!isDisplacementOccurs()) {
-                orientate(orientation);
-                move(MOVE_DURATION);
-            }
+        if (b.isDown() && !isDisplacementOccurs()) {
+            orientate(orientation);
+            move(MOVE_DURATION);
         }
     }
 
-
+    @Override
+    public void draw(Canvas canvas) {
+        animation.draw(canvas);
+    }
 
     private class ICMazePlayerInteractionHandler implements ICMazeInteractionVisitor {
+
+        public void interactWith(Portal portal, boolean isCellInteraction) {
+            // Déverrouillage si INTERACTING
+            if (state == State.INTERACTING) {
+                for (int keyId : collectedKeys) {
+                    if (portal.tryUnlock(keyId)) {
+                        System.out.println("Portail déverrouillé avec la clé " + keyId);
+                        break;
+                    }
+                }
+            }
+
+            // Interaction de contact : on stocke le portail
+            if (isCellInteraction && portal.isOpen()) {
+                currentPortal = portal;
+            }
+        }
+
         public void interactWith(Pickaxe pickaxe, boolean isCellInteractable) {
             if (isCellInteractable) {
                 pickaxe.collect();
-                System.out.println("La pioche a été ramasée !");
+                System.out.println("La pioche a été ramassée !");
             }
         }
 
         public void interactWith(Heart heart, boolean isCellInteractable) {
             if (isCellInteractable) {
                 heart.collect();
-                System.out.println("Un coeur a été recupéré !");
+                System.out.println("Un cœur a été récupéré !");
+            }
+        }
+
+        public void interactWith(Key key, boolean isCellInteraction) {
+            if (isCellInteraction) {
+                collectKey(key.getKeyId());
+                key.collect();
+                System.out.println("La clé est collectée !");
             }
         }
     }
