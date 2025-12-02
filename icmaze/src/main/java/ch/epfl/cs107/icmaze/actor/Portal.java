@@ -33,10 +33,10 @@ public class Portal extends AreaEntity implements Interactable {
     private void createSprite() {
         switch (state) {
             case INVISIBLE:
-                new Sprite("icmaze/invisibleDoor_"+getOrientation().ordinal(), (getOrientation().ordinal()+1)%2+1, getOrientation().ordinal()%2+1, this);
+                sprite = new Sprite("icmaze/invisibleDoor_"+getOrientation().ordinal(), (getOrientation().ordinal()+1)%2+1, getOrientation().ordinal()%2+1, this);
                 break;
             case LOCKED:
-                new Sprite("icmaze/chained_wood_"+getOrientation().ordinal(), (getOrientation().ordinal()+1)%2+1, getOrientation().ordinal()%2+1, this);
+                sprite = new Sprite("icmaze/chained_wood_"+getOrientation().ordinal(), (getOrientation().ordinal()+1)%2+1, getOrientation().ordinal()%2+1, this);
                 break;
             case OPEN:
                 sprite = null;
