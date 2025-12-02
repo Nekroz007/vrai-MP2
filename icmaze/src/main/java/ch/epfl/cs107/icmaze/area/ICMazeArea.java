@@ -72,14 +72,10 @@ public abstract class ICMazeArea extends Area {
      * Création des portails par défaut
      */
     protected void createPortals() {
-        portals.put(AreaPortals.N, new Portal(this, Orientation.DOWN,
-                new DiscreteCoordinates(size / 2, size + 1), Portal.NO_KEY_ID, Portal.State.INVISIBLE));
-        portals.put(AreaPortals.S, new Portal(this, Orientation.UP,
-                new DiscreteCoordinates(size / 2, 0), Portal.NO_KEY_ID, Portal.State.INVISIBLE));
-        portals.put(AreaPortals.W, new Portal(this, Orientation.RIGHT,
-                new DiscreteCoordinates(0, size / 2), Portal.NO_KEY_ID, Portal.State.INVISIBLE));
-        portals.put(AreaPortals.E, new Portal(this, Orientation.LEFT,
-                new DiscreteCoordinates(size + 1, size / 2), Portal.NO_KEY_ID, Portal.State.INVISIBLE));
+        portals.put(AreaPortals.N, new Portal(this, Orientation.DOWN, new DiscreteCoordinates(size / 2, size + 1), Portal.NO_KEY_ID, Portal.State.INVISIBLE));
+        portals.put(AreaPortals.S, new Portal(this, Orientation.UP, new DiscreteCoordinates(size / 2, 0), Portal.NO_KEY_ID, Portal.State.INVISIBLE));
+        portals.put(AreaPortals.W, new Portal(this, Orientation.RIGHT, new DiscreteCoordinates(0, size / 2), Portal.NO_KEY_ID, Portal.State.INVISIBLE));
+        portals.put(AreaPortals.E, new Portal(this, Orientation.LEFT, new DiscreteCoordinates(size + 1, size / 2), Portal.NO_KEY_ID, Portal.State.INVISIBLE));
     }
 
     /**
@@ -89,5 +85,4 @@ public abstract class ICMazeArea extends Area {
     public final float getCameraScaleFactor() {
         return cameraScaleFactor;
     }
-
 }

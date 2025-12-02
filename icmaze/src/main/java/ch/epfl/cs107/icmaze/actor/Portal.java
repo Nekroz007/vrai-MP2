@@ -7,6 +7,7 @@ import ch.epfl.cs107.play.areagame.area.Area;
 import ch.epfl.cs107.play.engine.actor.Sprite;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
+import ch.epfl.cs107.play.math.Vector;
 import ch.epfl.cs107.play.window.Canvas;
 
 import java.util.List;
@@ -53,9 +54,14 @@ public class Portal extends AreaEntity implements Interactable {
 
     @Override
     public List<DiscreteCoordinates> getCurrentCells() {
-        return List.of(getCurrentMainCellCoordinates());
+        DiscreteCoordinates coord = getCurrentMainCellCoordinates();
+        Vector jump = new Vector((getOrientation().ordinal()+1)%2, getOrientation().ordinal()%2);
+        return List.of(coord, coord.jump(jump));
     }
-
+    @Override
+    public void onLeaving(List<DiscreteCoordinates> coordinates) {}
+    @Override
+    public void onEntering(List<DiscreteCoordinates> coordinates) {}
 
     public boolean tryUnlock(int playerKeyId) {
         if (keyId == NO_KEY_ID) return false;
@@ -68,9 +74,9 @@ public class Portal extends AreaEntity implements Interactable {
     }
 
     public boolean isOpen() { return state == State.OPEN; }
+    public boolean isLocked() { return state == State.LOCKED; }
 
     public String getDestinationAreaName() { return destinationAreaName; }
-
     public DiscreteCoordinates getDestinationCoords() { return destinationCoords; }
 
     public void setDestination(String areaName, DiscreteCoordinates coords) {
