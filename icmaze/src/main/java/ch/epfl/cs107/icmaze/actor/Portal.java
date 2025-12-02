@@ -33,12 +33,10 @@ public class Portal extends AreaEntity implements Interactable {
     private void createSprite() {
         switch (state) {
             case INVISIBLE:
-                sprite = new Sprite("icmaze/invisibleDoor_" + getOrientation().ordinal(),
-                        1,1, this);
+                new Sprite("icmaze/invisibleDoor_"+getOrientation().ordinal(), (getOrientation().ordinal()+1)%2+1, getOrientation().ordinal()%2+1, this);
                 break;
             case LOCKED:
-                sprite = new Sprite("icmaze/chained_wood_" + getOrientation().ordinal(),
-                        1,1, this);
+                new Sprite("icmaze/chained_wood_"+getOrientation().ordinal(), (getOrientation().ordinal()+1)%2+1, getOrientation().ordinal()%2+1, this);
                 break;
             case OPEN:
                 sprite = null;
@@ -57,6 +55,7 @@ public class Portal extends AreaEntity implements Interactable {
     public List<DiscreteCoordinates> getCurrentCells() {
         return List.of(getCurrentMainCellCoordinates());
     }
+
 
     public boolean tryUnlock(int playerKeyId) {
         if (keyId == NO_KEY_ID) return false;

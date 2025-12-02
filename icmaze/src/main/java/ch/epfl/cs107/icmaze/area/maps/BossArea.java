@@ -21,7 +21,7 @@ public class BossArea extends ICMazeArea {
 
         Portal westPortal = portals.get(AreaPortals.W);
         westPortal.setState(Portal.State.OPEN);
-        westPortal.setDestination("Spawn", new DiscreteCoordinates(size, size / 2 + 1));
+        westPortal.setDestination("icmaze/Spawn", new DiscreteCoordinates(size, size / 2 + 1));
 
         for (Portal p : portals.values()) registerActor(p);
     }

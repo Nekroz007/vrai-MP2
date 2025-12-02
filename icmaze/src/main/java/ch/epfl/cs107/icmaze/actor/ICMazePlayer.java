@@ -52,11 +52,9 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
         Keyboard keyboard = getOwnerArea().getKeyboard();
         Button interactKey = keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.interact());
 
-        // Gestion état INTERACTING
         if (state == State.IDLE && interactKey.isPressed()) state = State.INTERACTING;
         if (state == State.INTERACTING && !interactKey.isDown()) state = State.IDLE;
 
-        // Déplacements
         if (state == State.IDLE) {
             moveIfPressed(LEFT, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.left()));
             moveIfPressed(UP, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.up()));
@@ -129,7 +127,6 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     private class ICMazePlayerInteractionHandler implements ICMazeInteractionVisitor {
 
         public void interactWith(Portal portal, boolean isCellInteraction) {
-            // Déverrouillage si INTERACTING
             if (state == State.INTERACTING) {
                 for (int keyId : collectedKeys) {
                     if (portal.tryUnlock(keyId)) {
@@ -139,7 +136,6 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
                 }
             }
 
-            // Interaction de contact : on stocke le portail
             if (isCellInteraction && portal.isOpen()) {
                 currentPortal = portal;
             }

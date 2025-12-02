@@ -16,13 +16,13 @@ public abstract class ICMazeArea extends Area {
     private float cameraScaleFactor = DEFAULT_SCALE_FACTOR;
     protected final int size;
 
-    // Map des portails de l'aire
     protected final Map<AreaPortals, Portal> portals = new HashMap<>();
 
     protected ICMazeArea(String behaviorName, int size) {
         super();
         this.behaviorName = behaviorName;
         this.size = size;
+
     }
 
     /**
