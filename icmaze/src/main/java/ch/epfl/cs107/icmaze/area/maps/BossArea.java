@@ -29,4 +29,3 @@ public class BossArea extends ICMazeArea {
     @Override
     public String getTitle() { return "icmaze/Boss"; }
 }
-

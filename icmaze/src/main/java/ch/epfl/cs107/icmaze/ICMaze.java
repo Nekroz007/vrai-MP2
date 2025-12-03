@@ -1,7 +1,6 @@
 package ch.epfl.cs107.icmaze;
 
 import ch.epfl.cs107.icmaze.actor.ICMazePlayer;
-import ch.epfl.cs107.icmaze.actor.collectable.Pickaxe;
 import ch.epfl.cs107.icmaze.area.ICMazeArea;
 import ch.epfl.cs107.icmaze.area.maps.BossArea;
 import ch.epfl.cs107.icmaze.area.maps.Spawn;
@@ -16,19 +15,11 @@ public class ICMaze extends AreaGame {
     private ICMazePlayer player;
     private int areaIndex;
 
-    /**
-     * Add all the Tuto2 areas
-     */
     private void createAreas() {
         addArea(new Spawn());
         addArea(new BossArea());
     }
 
-    /**
-     * @param window (Window): display context. Not null
-     * @param fileSystem (FileSystem): given file system. Not null
-     * @return true if the game begins properly
-     */
     @Override
     public boolean begin(Window window, FileSystem fileSystem) {
         if (super.begin(window, fileSystem)) {
@@ -40,29 +31,20 @@ public class ICMaze extends AreaGame {
         return false;
     }
 
-    /**
-     * @param deltaTime elapsed time since last update, in seconds, non-negative
-     */
     @Override
     public void update(float deltaTime) {
-            switchArea();
+        switchArea(); // Gère les téléportations si besoin
         super.update(deltaTime);
     }
 
     @Override
-    public void end() {
-
-    }
+    public void end() {}
 
     @Override
     public String getTitle() {
         return "ICMaze";
     }
 
-    /**
-     * sets the area named `areaKey` as current area in the game Tuto2
-     * @param areaKey (String) title of an area
-     */
     private void initArea(String areaKey) {
         ICMazeArea area = (ICMazeArea) setCurrentArea(areaKey, true);
         DiscreteCoordinates coords = area.getPlayerSpawnPosition();
@@ -72,16 +54,21 @@ public class ICMaze extends AreaGame {
     }
 
     /**
-     * switches from one area to the other
-     * the player is healed when moving to a new area
+     * Change de zone si nécessaire
      */
-    private void switchArea() {
-        /*player.leaveArea();
-        areaIndex = (areaIndex == 0) ? 1 : 0;
-        ICMazeArea currentArea = (ICMazeArea) setCurrentArea(areas[areaIndex], false);
-        player.enterArea(currentArea, currentArea.getPlayerSpawnPosition());
-        player.strengthen();
+    public void switchArea() {
+        if (player.getCurrentPortal() != null) {
+            // Récupère la destination
+            String destArea = player.getCurrentPortal().getDestinationAreaName();
+            DiscreteCoordinates destCoords = player.getCurrentPortal().getDestinationCoords();
 
-         */
+            if (destArea != null && destCoords != null) {
+                player.leaveArea();
+                ICMazeArea currentArea = (ICMazeArea) setCurrentArea(destArea, false);
+                player.enterArea(currentArea, destCoords);
+                player.centerCamera();
+            }
+            player.resetPortal(); // On réinitialise le portail
+        }
     }
 }

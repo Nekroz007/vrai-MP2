@@ -20,12 +20,12 @@ public class Spawn extends ICMazeArea {
     @Override
     protected void createArea() {
         registerActor(new Background(this, "SmallArea"));
-        registerActor(new Foreground(this, null,"SmallArea"));
+        registerActor(new Foreground(this, null, "SmallArea"));
 
-        registerActor(new Pickaxe(this,Orientation.DOWN, new DiscreteCoordinates(5,4)));
-        registerActor(new Heart(this, Orientation.DOWN, new DiscreteCoordinates(4,5)));
-        registerActor(new Key(this, Orientation.UP, new DiscreteCoordinates(6,5), Integer.MAX_VALUE));
-        registerActor(new Key(this, Orientation.UP, new DiscreteCoordinates(1,2), Integer.MAX_VALUE - 1));
+        registerActor(new Pickaxe(this, Orientation.DOWN, new DiscreteCoordinates(5, 4)));
+        registerActor(new Heart(this, Orientation.DOWN, new DiscreteCoordinates(4, 5)));
+        registerActor(new Key(this, Orientation.UP, new DiscreteCoordinates(6, 5), Integer.MAX_VALUE));
+        registerActor(new Key(this, Orientation.UP, new DiscreteCoordinates(1, 2), Integer.MAX_VALUE-1));
 
         createPortals();
 

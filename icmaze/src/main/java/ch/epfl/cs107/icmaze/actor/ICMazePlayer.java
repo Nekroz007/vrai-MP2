@@ -23,6 +23,7 @@ import java.util.List;
 import static ch.epfl.cs107.play.math.Orientation.*;
 
 public class ICMazePlayer extends ICMazeActor implements Interactor {
+
     private final static int MOVE_DURATION = 8;
     private final Vector anchor = new Vector(0, 0);
     private final Orientation[] orders = {DOWN, RIGHT, UP, LEFT};
@@ -124,8 +125,12 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
         animation.draw(canvas);
     }
 
+    /**
+     * Gestion des interactions avec les objets de l’aire (portails, clés, pickaxe, cœur)
+     */
     private class ICMazePlayerInteractionHandler implements ICMazeInteractionVisitor {
 
+        @Override
         public void interactWith(Portal portal, boolean isCellInteraction) {
             if (state == State.INTERACTING) {
                 for (int keyId : collectedKeys) {
@@ -141,6 +146,7 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
             }
         }
 
+        @Override
         public void interactWith(Pickaxe pickaxe, boolean isCellInteractable) {
             if (isCellInteractable) {
                 pickaxe.collect();
@@ -148,6 +154,7 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
             }
         }
 
+        @Override
         public void interactWith(Heart heart, boolean isCellInteractable) {
             if (isCellInteractable) {
                 heart.collect();
@@ -155,6 +162,7 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
             }
         }
 
+        @Override
         public void interactWith(Key key, boolean isCellInteraction) {
             if (isCellInteraction) {
                 collectKey(key.getKeyId());
