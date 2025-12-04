@@ -23,7 +23,6 @@ import java.util.List;
 import static ch.epfl.cs107.play.math.Orientation.*;
 
 public class ICMazePlayer extends ICMazeActor implements Interactor {
-
     private final static int MOVE_DURATION = 8;
     private final Vector anchor = new Vector(0, 0);
     private final Orientation[] orders = {DOWN, RIGHT, UP, LEFT};
@@ -77,13 +76,10 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     }
 
     @Override
-    public boolean takeCellSpace() {
-        return true;
-    }
+    public boolean takeCellSpace() { return true; }
 
-    public Portal getCurrentPortal() {
-        return currentPortal;
-    }
+    public Portal getCurrentPortal() { return currentPortal; }
+    public void resetPortal() { currentPortal = null; }
 
     @Override
     public List<DiscreteCoordinates> getCurrentCells() {
@@ -95,23 +91,12 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
         return Collections.singletonList(getCurrentMainCellCoordinates().jump(getOrientation().toVector()));
     }
 
-    public void resetPortal() {
-        currentPortal = null;
-    }
-
     @Override
-    public boolean wantsCellInteraction() {
-        return true;
-    }
-
+    public boolean wantsCellInteraction() { return true; }
     @Override
-    public boolean wantsViewInteraction() {
-        return state == State.INTERACTING;
-    }
+    public boolean wantsViewInteraction() { return state == State.INTERACTING; }
 
-    public void centerCamera() {
-        getOwnerArea().setViewCandidate(this);
-    }
+    public void centerCamera() { getOwnerArea().setViewCandidate(this); }
 
     private void moveIfPressed(Orientation orientation, Button b) {
         if (b.isDown() && !isDisplacementOccurs()) {
@@ -121,53 +106,31 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     }
 
     @Override
-    public void draw(Canvas canvas) {
-        animation.draw(canvas);
-    }
+    public void draw(Canvas canvas) { animation.draw(canvas); }
 
-    /**
-     * Gestion des interactions avec les objets de l’aire (portails, clés, pickaxe, cœur)
-     */
     private class ICMazePlayerInteractionHandler implements ICMazeInteractionVisitor {
 
-        @Override
         public void interactWith(Portal portal, boolean isCellInteraction) {
             if (state == State.INTERACTING) {
                 for (int keyId : collectedKeys) {
-                    if (portal.tryUnlock(keyId)) {
-                        System.out.println("Portail déverrouillé avec la clé " + keyId);
-                        break;
-                    }
+                    if (portal.tryUnlock(keyId)) break;
                 }
             }
-
-            if (isCellInteraction && portal.isOpen()) {
-                currentPortal = portal;
-            }
+            if (isCellInteraction && portal.isOpen()) currentPortal = portal;
         }
 
-        @Override
         public void interactWith(Pickaxe pickaxe, boolean isCellInteractable) {
-            if (isCellInteractable) {
-                pickaxe.collect();
-                System.out.println("La pioche a été ramassée !");
-            }
+            if (isCellInteractable) pickaxe.collect();
         }
 
-        @Override
         public void interactWith(Heart heart, boolean isCellInteractable) {
-            if (isCellInteractable) {
-                heart.collect();
-                System.out.println("Un cœur a été récupéré !");
-            }
+            if (isCellInteractable) heart.collect();
         }
 
-        @Override
         public void interactWith(Key key, boolean isCellInteraction) {
             if (isCellInteraction) {
                 collectKey(key.getKeyId());
                 key.collect();
-                System.out.println("La clé est collectée !");
             }
         }
     }

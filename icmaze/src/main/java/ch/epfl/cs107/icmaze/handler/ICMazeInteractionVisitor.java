@@ -18,7 +18,8 @@ public interface ICMazeInteractionVisitor extends AreaInteractionVisitor {
     default void interactWith(ICMazePlayer player, boolean isCellInteraction) { ; }
     default void interactWith(Pickaxe pickaxe, boolean isCellInteraction) { ; }
     default void interactWith(Heart heart, boolean isCellInteraction) { ; }
-    default void interactWith(Portal portal, boolean isCellInteraction) { ; }
     default void interactWith(Key key, boolean isCellInteraction) { ; }
+    default void interactWith(Portal portal, boolean isCellInteraction) { ; }
+
 
 }

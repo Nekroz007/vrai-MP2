@@ -7,6 +7,7 @@ import ch.epfl.cs107.play.engine.actor.Foreground;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 
 public class BossArea extends ICMazeArea {
+
     public BossArea() { super("SmallArea", 8); }
 
     @Override
@@ -15,7 +16,7 @@ public class BossArea extends ICMazeArea {
     @Override
     protected void createArea() {
         registerActor(new Background(this, "SmallArea"));
-        registerActor(new Foreground(this, null,"SmallArea"));
+        registerActor(new Foreground(this, null, "SmallArea"));
 
         createPortals();
 

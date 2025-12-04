@@ -34,12 +34,15 @@ public class Portal extends AreaEntity implements Interactable {
     private void createSprite() {
         switch (state) {
             case INVISIBLE:
-                sprite = new Sprite("icmaze/invisibleDoor_"+getOrientation().ordinal(), (getOrientation().ordinal()+1)%2+1, getOrientation().ordinal()%2+1, this);
+                sprite = new Sprite("icmaze/invisibleDoor_" + getOrientation().ordinal(),
+                        (getOrientation().ordinal()+1)%2+1, getOrientation().ordinal()%2+1, this);
                 break;
             case LOCKED:
-                sprite = new Sprite("icmaze/chained_wood_"+getOrientation().ordinal(), (getOrientation().ordinal()+1)%2+1, getOrientation().ordinal()%2+1, this);
+                sprite = new Sprite("icmaze/chained_wood_" + getOrientation().ordinal(),
+                        (getOrientation().ordinal()+1)%2+1, getOrientation().ordinal()%2+1, this);
                 break;
             case OPEN:
+            default:
                 sprite = null;
                 break;
         }
@@ -58,6 +61,7 @@ public class Portal extends AreaEntity implements Interactable {
         Vector jump = new Vector((getOrientation().ordinal()+1)%2, getOrientation().ordinal()%2);
         return List.of(coord, coord.jump(jump));
     }
+
     @Override
     public void onLeaving(List<DiscreteCoordinates> coordinates) {}
     @Override
@@ -91,12 +95,15 @@ public class Portal extends AreaEntity implements Interactable {
 
     public void setKeyId(int keyId) { this.keyId = keyId; }
 
+    @Override
     public void draw(Canvas canvas) {
         if (sprite != null) sprite.draw(canvas);
     }
+
     @Override
     public void acceptInteraction(ch.epfl.cs107.play.areagame.handler.AreaInteractionVisitor v, boolean isCellInteraction) {
-        ((ICMazeInteractionVisitor)v).interactWith(this, isCellInteraction);
+        if (v instanceof ICMazeInteractionVisitor) {
+            ((ICMazeInteractionVisitor)v).interactWith(this, isCellInteraction);
+        }
     }
-
 }

@@ -8,6 +8,7 @@ import ch.epfl.cs107.play.areagame.AreaGame;
 import ch.epfl.cs107.play.io.FileSystem;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
+import ch.epfl.cs107.play.window.Keyboard;
 import ch.epfl.cs107.play.window.Window;
 
 public class ICMaze extends AreaGame {
@@ -33,8 +34,18 @@ public class ICMaze extends AreaGame {
 
     @Override
     public void update(float deltaTime) {
-        switchArea(); // Gère les téléportations si besoin
+        Keyboard keyboard = getWindow().getKeyboard();
+        if (keyboard.get(KeyBindings.RESET_GAME).isPressed()){
+            resetGame();
+            return;
+        }
+        switchArea();
         super.update(deltaTime);
+    }
+    private void resetGame() {
+        createAreas();
+        areaIndex = 0;
+        initArea(areas[areaIndex]);
     }
 
     @Override
@@ -58,7 +69,6 @@ public class ICMaze extends AreaGame {
      */
     public void switchArea() {
         if (player.getCurrentPortal() != null) {
-            // Récupère la destination
             String destArea = player.getCurrentPortal().getDestinationAreaName();
             DiscreteCoordinates destCoords = player.getCurrentPortal().getDestinationCoords();
 
@@ -68,7 +78,7 @@ public class ICMaze extends AreaGame {
                 player.enterArea(currentArea, destCoords);
                 player.centerCamera();
             }
-            player.resetPortal(); // On réinitialise le portail
+            player.resetPortal();
         }
     }
 }
