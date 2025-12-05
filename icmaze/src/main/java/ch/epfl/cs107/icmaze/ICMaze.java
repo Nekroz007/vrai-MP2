@@ -69,12 +69,12 @@ public class ICMaze extends AreaGame {
      */
     public void switchArea() {
         if (player.getCurrentPortal() != null) {
-            String destArea = player.getCurrentPortal().getDestinationAreaName();
+            String destinArea = player.getCurrentPortal().getDestinationAreaName();
             DiscreteCoordinates destCoords = player.getCurrentPortal().getDestinationCoords();
 
-            if (destArea != null && destCoords != null) {
+            if (destinArea != null && destCoords != null) {
                 player.leaveArea();
-                ICMazeArea currentArea = (ICMazeArea) setCurrentArea(destArea, false);
+                ICMazeArea currentArea = (ICMazeArea) setCurrentArea(destinArea, false);
                 player.enterArea(currentArea, destCoords);
                 player.centerCamera();
             }
