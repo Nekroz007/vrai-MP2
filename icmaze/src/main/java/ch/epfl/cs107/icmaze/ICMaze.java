@@ -2,8 +2,7 @@ package ch.epfl.cs107.icmaze;
 
 import ch.epfl.cs107.icmaze.actor.ICMazePlayer;
 import ch.epfl.cs107.icmaze.area.ICMazeArea;
-import ch.epfl.cs107.icmaze.area.maps.BossArea;
-import ch.epfl.cs107.icmaze.area.maps.Spawn;
+import ch.epfl.cs107.icmaze.area.maps.*;
 import ch.epfl.cs107.play.areagame.AreaGame;
 import ch.epfl.cs107.play.io.FileSystem;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
@@ -19,6 +18,9 @@ public class ICMaze extends AreaGame {
     private void createAreas() {
         addArea(new Spawn());
         addArea(new BossArea());
+        addArea(new SmallArea());
+        addArea(new MediumArea());
+        addArea(new LargeArea());
     }
 
     @Override
