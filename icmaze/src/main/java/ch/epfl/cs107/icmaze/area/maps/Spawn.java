@@ -1,6 +1,7 @@
 package ch.epfl.cs107.icmaze.area.maps;
 
 import ch.epfl.cs107.icmaze.actor.Portal;
+import ch.epfl.cs107.icmaze.actor.Rock;
 import ch.epfl.cs107.icmaze.actor.collectable.Heart;
 import ch.epfl.cs107.icmaze.actor.collectable.Key;
 import ch.epfl.cs107.icmaze.actor.collectable.Pickaxe;
@@ -26,6 +27,7 @@ public class Spawn extends ICMazeArea {
         registerActor(new Heart(this, Orientation.DOWN, new DiscreteCoordinates(4,5)));
         registerActor(new Key(this, Orientation.UP, new DiscreteCoordinates(6,5), Integer.MAX_VALUE));
         registerActor(new Key(this, Orientation.UP, new DiscreteCoordinates(1,2), Integer.MAX_VALUE-1));
+        registerActor(new Rock(this, Orientation.DOWN, new DiscreteCoordinates(6, 6)));
 
         createPortals();
 

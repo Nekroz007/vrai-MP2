@@ -16,7 +16,7 @@ public class SmallArea extends ICMazeArea {
     }
 
     @Override
-    public DiscreteCoordinates getPlayerSpawnPosition() { return new DiscreteCoordinates(1, size / 2 + 1); }
+    public DiscreteCoordinates getPlayerSpawnPosition() { return new DiscreteCoordinates(1, size/2 + 1); }
 
 
     protected void createArea() {
@@ -31,7 +31,7 @@ public class SmallArea extends ICMazeArea {
 
         Portal eastPortal = portals.get(AreaPortals.E);
         eastPortal.setState(Portal.State.OPEN);
-        eastPortal.setDestination("icmaze/MediumArea", new DiscreteCoordinates(1, size/ 2 + 1));
+        eastPortal.setDestination("icmaze/MediumArea", new DiscreteCoordinates(1, 8));
 
 
         for (Portal p : portals.values()) registerActor(p);
