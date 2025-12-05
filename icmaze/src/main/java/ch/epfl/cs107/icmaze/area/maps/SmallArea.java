@@ -8,7 +8,7 @@ import ch.epfl.cs107.play.engine.actor.Foreground;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 
 public class SmallArea extends ICMazeArea {
-    private int difficulty;
+    private final int difficulty;
 
     public SmallArea() {
         super("SmallArea", 8);

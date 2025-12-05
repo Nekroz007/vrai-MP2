@@ -6,12 +6,7 @@ import ch.epfl.cs107.play.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.window.Window;
 
 public class ICMazeBehavior extends AreaBehavior{
-    /**
-     * Default ICMazeBehavior Constructor
-     *
-     * @param window (Window), not null
-     * @param name   (String): Name of the Behavior, not null
-     */
+
     public ICMazeBehavior(Window window, String name) {
         super(window, name);
         int height = getHeight();
@@ -25,7 +20,6 @@ public class ICMazeBehavior extends AreaBehavior{
     }
 
     public enum ICMazeCellType {
-        //https://stackoverflow.com/questions/25761438/understanding-bufferedimage-getrgb-output-values
         NULL(0, false),
         GROUND(-16777216, true),
         WALL(-14112955, false),
@@ -51,20 +45,11 @@ public class ICMazeBehavior extends AreaBehavior{
         }
     }
 
-    /**
-     * Cell adapted to the ICMaze game
-     */
+
     public class ICMazeCell extends AreaBehavior.Cell {
-        /// Type of the cell following the enum
+
         private final ICMazeCellType type;
 
-        /**
-         * Default Tuto2Cell Constructor
-         *
-         * @param x    (int): x coordinate of the cell
-         * @param y    (int): y coordinate of the cell
-         * @param type (EnigmeCellType), not null
-         */
         public ICMazeCell(int x, int y, ICMazeCellType type) {
             super(x, y);
             this.type = type;

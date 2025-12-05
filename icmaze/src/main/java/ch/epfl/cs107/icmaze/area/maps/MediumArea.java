@@ -8,7 +8,7 @@ import ch.epfl.cs107.play.engine.actor.Foreground;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 
 public class MediumArea extends ICMazeArea {
-    private int difficulty;
+    private final int difficulty;
 
     public MediumArea() {
         super("MediumArea", 16);
@@ -18,7 +18,7 @@ public class MediumArea extends ICMazeArea {
     @Override
     public DiscreteCoordinates getPlayerSpawnPosition() { return new DiscreteCoordinates(size, size / 2 + 1); }
 
-
+    @Override
     protected void createArea() {
         registerActor(new Background(this, "MediumArea"));
         registerActor(new Foreground(this, null, "MediumArea"));

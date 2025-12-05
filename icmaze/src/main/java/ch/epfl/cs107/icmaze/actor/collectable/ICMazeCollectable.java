@@ -22,14 +22,17 @@ public abstract class ICMazeCollectable extends CollectableAreaEntity {
         }
     }
 
+     @Override
     public boolean takeCellSpace() {
         return false;
     }
 
+    @Override
     public boolean isCellInteractable() {
         return true;
     }
 
+    @Override
     public boolean isViewInteractable() {
         return false;
     }
