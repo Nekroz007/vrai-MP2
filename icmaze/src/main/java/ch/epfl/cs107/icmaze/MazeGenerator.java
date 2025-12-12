@@ -15,20 +15,20 @@ public final class MazeGenerator {
 
     private MazeGenerator(){}
     public static int[][] createMaze(int width, int height, int difficulty) {
-        // defensive
+
         if (width < 3 || height < 3) {
             throw new IllegalArgumentException("width/height must be >= 3");
         }
         int[][] grid = new int[height][width];
 
-        // fill with passages
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 grid[y][x] = PASSAGE;
             }
         }
 
-        // put outer walls
+
         for (int x = 0; x < width; x++) {
             grid[0][x] = WALL;
             grid[height - 1][x] = WALL;
@@ -38,7 +38,7 @@ public final class MazeGenerator {
             grid[y][width - 1] = WALL;
         }
 
-        // divide interior region (1,1) .. (width-2,height-2)
+
         divide(grid, 1, 1, width - 2, height - 2, difficulty);
         return grid;
     }
