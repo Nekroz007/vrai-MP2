@@ -97,9 +97,6 @@ public abstract class ICMazeArea extends Area {
 
     protected void generateMazeAndPlaceRocks(int difficulty) {
 
-        registerActor(new Background(this, behaviorName));
-        registerActor(new Foreground(this, null, behaviorName));
-
         int[][] grid = MazeGenerator.createMaze(size, size, difficulty);
 
         DiscreteCoordinates entrance = getPlayerSpawnPosition();
@@ -118,7 +115,7 @@ public abstract class ICMazeArea extends Area {
                     if (entrance.x == x && entrance.y == gameY)
                         continue;
 
-                    registerActor(new Rock(this, Orientation.DOWN, new DiscreteCoordinates(x, y)));
+                    registerActor(new Rock(this, Orientation.DOWN, new DiscreteCoordinates(x, gameY)));
                 }
             }
         }

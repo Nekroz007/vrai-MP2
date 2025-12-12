@@ -38,7 +38,7 @@ public final class MazeGenerator {
         }
 
         // divide interior region (1,1) .. (width-2,height-2)
-        divide(grid, 1, 1, width - 1, height - 1, difficulty);
+        divide(grid, 1, 1, width - 2, height - 2, difficulty);
         return grid;
     }
 
