@@ -29,13 +29,12 @@ public class Spawn extends ICMazeArea {
         registerActor(new Heart(this, Orientation.DOWN, new DiscreteCoordinates(4,5)));
         registerActor(new Key(this, Orientation.UP, new DiscreteCoordinates(6,5), Integer.MAX_VALUE));
         registerActor(new Key(this, Orientation.UP, new DiscreteCoordinates(1,2), Integer.MAX_VALUE-1));
-        registerActor(new Rock(this, Orientation.DOWN, new DiscreteCoordinates(6, 6)));
 
         createPortals();
 
         Portal eastPortal = portals.get(ICMazeArea.AreaPortals.E);
         eastPortal.setState(Portal.State.LOCKED);
-        eastPortal.setDestination("icmaze/SmallArea", new DiscreteCoordinates(1, size/2 + 1));
+        eastPortal.setDestination("icmaze/SmallArea", new DiscreteCoordinates(1,4));
         eastPortal.setKeyId(Integer.MAX_VALUE);
 
         for (Portal p : portals.values()) registerActor(p);

@@ -23,7 +23,7 @@ public class BossArea extends ICMazeArea {
 
         Portal westPortal = portals.get(AreaPortals.W);
         westPortal.setState(Portal.State.OPEN);
-        westPortal.setDestination("icmaze/LargeArea", new DiscreteCoordinates(size - 1, size / 2 + 1));
+        westPortal.setDestination("icmaze/LargeArea", new DiscreteCoordinates(32, 16));
 
         for (Portal p : portals.values()) registerActor(p);
     }

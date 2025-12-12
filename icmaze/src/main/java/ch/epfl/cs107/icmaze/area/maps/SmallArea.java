@@ -27,16 +27,19 @@ public class SmallArea extends ICMazeArea {
 
     @Override
     protected void createArea() {
+        registerActor(new Background(this, "SmallArea"));
+        registerActor(new Foreground(this, null, "SmallArea"));
+
         generateMazeAndPlaceRocks(difficulty);
         createPortals();
 
         Portal westPortal = portals.get(AreaPortals.W);
         westPortal.setState(Portal.State.OPEN);
-        westPortal.setDestination("icmaze/Spawn", new DiscreteCoordinates(1, size / 2 + 1));
+        westPortal.setDestination("icmaze/Spawn", new DiscreteCoordinates(8, 4));
 
         Portal eastPortal = portals.get(AreaPortals.E);
         eastPortal.setState(Portal.State.OPEN);
-        eastPortal.setDestination("icmaze/MediumArea", new DiscreteCoordinates(16, 9));
+        eastPortal.setDestination("icmaze/MediumArea", new DiscreteCoordinates( 1, 8));
 
         for (Portal p : portals.values()) registerActor(p);
     }

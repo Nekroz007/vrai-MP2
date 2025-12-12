@@ -1,59 +1,57 @@
 package ch.epfl.cs107.icmaze;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 
-/**
- * Utility class for generating rectangular mazes using the recursive division algorithm.
- * Provides additional helpers to ensure solvability and visualize the maze.
- */
 public final class MazeGenerator {
     private static final int WALL = 1;
     private static final Random random = RandomGenerator.rng;
     private static final int PASSAGE = 0;
 
     private MazeGenerator(){}
-    public static int[][] createMaze(int width, int height, int difficulty) {
 
+    public static int[][] createMaze(int width, int height, int difficulty) {
+        // defensive
         if (width < 3 || height < 3) {
             throw new IllegalArgumentException("width/height must be >= 3");
         }
-        int[][] grid = new int[height][width];
 
+        int[][] grid = new int[width][height]; // INVERSION ICI
 
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                grid[y][x] = PASSAGE;
+        // fill with passages
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                grid[x][y] = PASSAGE;
             }
         }
 
-
+        // put outer walls
         for (int x = 0; x < width; x++) {
-            grid[0][x] = WALL;
-            grid[height - 1][x] = WALL;
+            grid[x][0] = WALL;
+            grid[x][height - 1] = WALL;
         }
         for (int y = 0; y < height; y++) {
-            grid[y][0] = WALL;
-            grid[y][width - 1] = WALL;
+            grid[0][y] = WALL;
+            grid[width - 1][y] = WALL;
         }
 
-
-        divide(grid, 1, 1, width - 2, height - 2, difficulty);
+        // divide interior region (1,1) .. (width-2,height-2)
+        divide(grid, 1, 1, width - 1, height - 1, difficulty);
         return grid;
     }
 
     /**
      * Recursive division
-     * x,y = top-left of subregion (inclusive) in grid coordinates
-     * width,height = subregion size (>=1)
+     * x,y = top-left of subregion (inclusive)
+     * width,height = subregion size
      */
     private static void divide(int[][] grid, int x, int y, int width, int height, int difficulty) {
 
         if (width <= difficulty || height <= difficulty) {
             return;
         }
-
 
         boolean horizontal;
         if (width > height) horizontal = false;
@@ -63,94 +61,87 @@ public final class MazeGenerator {
         if (horizontal) {
             int possibleRange = height - 2;
             if (possibleRange <= 0) return;
+
             int wallOffset = randomOdd(possibleRange);
             int wallY = y + wallOffset;
 
-
+            // horizontal wall
             for (int i = x; i < x + width; i++) {
-                grid[wallY][i] = WALL;
+                grid[i][wallY] = WALL;
             }
 
+            // passage
             int passageRange = width - 1;
             int passageOffset = randomEven(passageRange);
             int passageX = x + passageOffset;
-            grid[wallY][passageX] = PASSAGE;
-
+            grid[passageX][wallY] = PASSAGE;
 
             int topHeight = wallY - y;
             int bottomHeight = y + height - (wallY + 1);
+
             divide(grid, x, y, width, topHeight, difficulty);
             divide(grid, x, wallY + 1, width, bottomHeight, difficulty);
+
         } else {
 
             int possibleRange = width - 2;
             if (possibleRange <= 0) return;
+
             int wallOffset = randomOdd(possibleRange);
             int wallX = x + wallOffset;
 
+            // vertical wall
             for (int i = y; i < y + height; i++) {
-                grid[i][wallX] = WALL;
+                grid[wallX][i] = WALL;
             }
 
+            // passage
             int passageRange = height - 1;
             int passageOffset = randomEven(passageRange);
             int passageY = y + passageOffset;
-            grid[passageY][wallX] = PASSAGE;
-
+            grid[wallX][passageY] = PASSAGE;
 
             int leftWidth = wallX - x;
             int rightWidth = x + width - (wallX + 1);
+
             divide(grid, x, y, leftWidth, height, difficulty);
             divide(grid, wallX + 1, y, rightWidth, height, difficulty);
         }
     }
 
 
-    /**
-     * Print the maze
-     */
-    public static void printMaze(int[][] grid, DiscreteCoordinates start, DiscreteCoordinates end) {
-        int height = grid.length;
-        int width = grid[0].length;
 
-        // Print top border
+
+
+    /** Visual print for debugging */
+    public static void printMaze(int[][] grid, DiscreteCoordinates start, DiscreteCoordinates end) {
+        int width = grid.length;
+        int height = grid[0].length;
+
         System.out.print("┌");
-        for (int i = 0; i < width; i++) {
-            System.out.print("───");
-        }
+        for (int x = 0; x < width; x++) System.out.print("───");
         System.out.println("┐");
 
-        // Print maze rows
         for (int y = 0; y < height; y++) {
             System.out.print("│");
             for (int x = 0; x < width; x++) {
                 if (x == start.x && y == start.y) System.out.print(" S ");
                 else if (x == end.x && y == end.y) System.out.print(" E ");
-                else System.out.print(grid[y][x] == WALL ? "███" : "   ");
+                else System.out.print(grid[x][y] == WALL ? "███" : "   ");
             }
             System.out.println("│");
         }
 
-        // Print bottom border
         System.out.print("└");
-        for (int i = 0; i < width; i++) {
-            System.out.print("───");
-        }
+        for (int x = 0; x < width; x++) System.out.print("───");
         System.out.println("┘");
     }
 
-    /**
-     * Returns a random odd number in [1, max] (assuming max > 0).
-     */
     private static int randomOdd(int max) {
         return 1 + 2 * random.nextInt((max + 1) / 2);
     }
 
-    /**
-     * Returns a random even number in [0, max] (assuming max >= 0).
-     */
     private static int randomEven(int max) {
         return 2 * random.nextInt((max + 1) / 2);
     }
 }
-

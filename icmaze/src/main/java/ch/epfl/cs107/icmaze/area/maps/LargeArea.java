@@ -25,17 +25,18 @@ public class LargeArea extends ICMazeArea {
 
 
     protected void createArea() {
+        registerActor(new Background(this, "LargeArea"));
         generateMazeAndPlaceRocks(difficulty);
 
         createPortals();
 
         Portal westPortal = portals.get(AreaPortals.W);
         westPortal.setState(Portal.State.OPEN);
-        westPortal.setDestination("icmaze/MediumArea", new DiscreteCoordinates(1, size / 2 + 1));
+        westPortal.setDestination("icmaze/MediumArea", new DiscreteCoordinates(16, 8));
 
         Portal eastPortal = portals.get(AreaPortals.E);
         eastPortal.setState(Portal.State.OPEN);
-        eastPortal.setDestination("icmaze/Boss", new DiscreteCoordinates(size, size / 2 + 1));
+        eastPortal.setDestination("icmaze/Boss", new DiscreteCoordinates(1, 4));
 
 
         for (Portal p : portals.values()) registerActor(p);

@@ -9,6 +9,7 @@ import ch.epfl.cs107.play.engine.actor.Foreground;
 import ch.epfl.cs107.play.io.FileSystem;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
+import ch.epfl.cs107.play.signal.logic.Or;
 import ch.epfl.cs107.play.window.Window;
 
 import java.util.HashMap;
@@ -91,7 +92,7 @@ public abstract class ICMazeArea extends Area {
 
     @Override
     public float getCameraScaleFactor() {
-        return Math.min(size * DYNAMIC_SCALE_MULTIPLIER, MAXIMUM_SCALE);
+        return (float) Math.min(size * DYNAMIC_SCALE_MULTIPLIER, MAXIMUM_SCALE);
     }
 
     protected void generateMazeAndPlaceRocks(int difficulty) {
@@ -103,15 +104,18 @@ public abstract class ICMazeArea extends Area {
 
         DiscreteCoordinates entrance = getPlayerSpawnPosition();
 
-        for (int y = 0; y < size; y++) {
-            for (int x = 0; x < size; x++) {
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++) {
 
-                if (grid[y][x] == 1) {
+                if (grid[x][y] == 1) {
+                    int gameY = size - 1 - y;   // <- ici la vraie correction
 
-                    if (x == 0 || x == size - 1 || y == 0 || y == size - 1)
+                    // skip outer walls
+                    if (x == 0 || x == size - 1 || gameY == 0 || gameY == size - 1)
                         continue;
 
-                    if (entrance.x == x && entrance.y == y)
+                    // skip entrance
+                    if (entrance.x == x && entrance.y == gameY)
                         continue;
 
                     registerActor(new Rock(this, Orientation.DOWN, new DiscreteCoordinates(x, y)));
@@ -119,6 +123,10 @@ public abstract class ICMazeArea extends Area {
             }
         }
 
-        MazeGenerator.printMaze(grid, entrance, new DiscreteCoordinates(size - 1, size / 2 + 1));
+        MazeGenerator.printMaze(
+                grid,
+                entrance,
+                new DiscreteCoordinates(size - 1, size / 2 + 1)
+        );
     }
 }
