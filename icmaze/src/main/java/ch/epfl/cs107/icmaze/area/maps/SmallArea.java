@@ -1,17 +1,11 @@
 package ch.epfl.cs107.icmaze.area.maps;
 
 import ch.epfl.cs107.icmaze.Difficulty;
-import ch.epfl.cs107.icmaze.MazeGenerator;
 import ch.epfl.cs107.icmaze.actor.Portal;
-import ch.epfl.cs107.icmaze.actor.Rock;
 import ch.epfl.cs107.icmaze.area.ICMazeArea;
 import ch.epfl.cs107.play.engine.actor.Background;
 import ch.epfl.cs107.play.engine.actor.Foreground;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
-import ch.epfl.cs107.play.math.Orientation;
-
-import static ch.epfl.cs107.icmaze.MazeGenerator.createMaze;
-import static ch.epfl.cs107.icmaze.MazeGenerator.printMaze;
 
 public class SmallArea extends ICMazeArea {
     private static final int KEY_ID = 1;

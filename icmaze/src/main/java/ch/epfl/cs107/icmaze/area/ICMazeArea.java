@@ -4,12 +4,9 @@ import ch.epfl.cs107.icmaze.MazeGenerator;
 import ch.epfl.cs107.icmaze.actor.Portal;
 import ch.epfl.cs107.icmaze.actor.Rock;
 import ch.epfl.cs107.play.areagame.area.Area;
-import ch.epfl.cs107.play.engine.actor.Background;
-import ch.epfl.cs107.play.engine.actor.Foreground;
 import ch.epfl.cs107.play.io.FileSystem;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
-import ch.epfl.cs107.play.signal.logic.Or;
 import ch.epfl.cs107.play.window.Window;
 
 import java.util.HashMap;
@@ -96,34 +93,30 @@ public abstract class ICMazeArea extends Area {
     }
 
     protected void generateMazeAndPlaceRocks(int difficulty) {
+        // 1. Appel au générateur pour obtenir la grille d'entiers (0 = vide, 1 = mur)
+        int[][] maze = MazeGenerator.createMaze(getWidth(), getHeight(), difficulty);
 
-        int[][] grid = MazeGenerator.createMaze(size, size, difficulty);
+        // 2. Définition des positions d'entrée (Ouest) et de sortie (Est) à protéger
+        // Selon la consigne, on ne doit pas bloquer l'entrée ou la sortie.
+        DiscreteCoordinates entryPos = new DiscreteCoordinates(0, getHeight() / 2);
+        DiscreteCoordinates exitPos = new DiscreteCoordinates(getWidth() - 1, getHeight() / 2);
 
-        DiscreteCoordinates entrance = getPlayerSpawnPosition();
+        // 3. Parcours de la grille pour placer les rochers
+        for (int y = 0; y < getHeight(); ++y) {
+            for (int x = 0; x < getWidth(); ++x) {
 
-        for (int x = 0; x < size; x++) {
-            for (int y = 0; y < size; y++) {
+                // Si la case correspond à un mur (valeur 1)
+                if (maze[y][x] == 1) {
+                    DiscreteCoordinates coords = new DiscreteCoordinates(x, y);
 
-                if (grid[x][y] == 1) {
-                    int gameY = size - 1 - y;   // <- ici la vraie correction
-
-                    // skip outer walls
-                    if (x == 0 || x == size - 1 || gameY == 0 || gameY == size - 1)
-                        continue;
-
-                    // skip entrance
-                    if (entrance.x == x && entrance.y == gameY)
-                        continue;
-
-                    registerActor(new Rock(this, Orientation.DOWN, new DiscreteCoordinates(x, gameY)));
+                    // Vérification : on ne place pas de rocher sur l'entrée ou la sortie
+                    if (!coords.equals(entryPos) && !coords.equals(exitPos)) {
+                        // Création et enregistrement du rocher
+                        // On suppose que Rock prend (Area, Orientation, Coordinates) en paramètres
+                        registerActor(new Rock(this, Orientation.DOWN, coords));
+                    }
                 }
             }
         }
-
-        MazeGenerator.printMaze(
-                grid,
-                entrance,
-                new DiscreteCoordinates(size - 1, size / 2 + 1)
-        );
     }
 }
