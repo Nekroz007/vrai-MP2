@@ -50,8 +50,10 @@ public class Portal extends AreaEntity implements Interactable {
 
     @Override
     public boolean isCellInteractable() { return true; }
+
     @Override
     public boolean isViewInteractable() { return true; }
+
     @Override
     public boolean takeCellSpace() { return state != State.OPEN; }
 
@@ -64,6 +66,7 @@ public class Portal extends AreaEntity implements Interactable {
 
     @Override
     public void onLeaving(List<DiscreteCoordinates> coordinates) {}
+
     @Override
     public void onEntering(List<DiscreteCoordinates> coordinates) {}
 

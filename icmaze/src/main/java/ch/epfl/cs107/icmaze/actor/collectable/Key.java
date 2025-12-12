@@ -19,13 +19,17 @@ public class Key extends ICMazeCollectable{
     public int getKeyId(){
         return keyId;
     }
+
     @Override
     public void draw(Canvas canvas){
         sprite.draw(canvas);
     }
+
+    @Override
     public void collect(){
         super.collect();
     }
+
     @Override
     public void acceptInteraction(AreaInteractionVisitor v, boolean isCellInteraction) {
         ((ICMazeInteractionVisitor) v).interactWith(this, isCellInteraction);

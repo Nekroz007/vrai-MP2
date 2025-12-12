@@ -39,10 +39,12 @@ public class Rock extends AreaEntity {
     public boolean isViewInteractable() {
         return true;
     }
+
     @Override
     public void acceptInteraction(AreaInteractionVisitor v, boolean isCellInteraction) {
         ((ICMazeInteractionVisitor) v).interactWith(this, isCellInteraction);
     }
+
     @Override
     public List<DiscreteCoordinates> getCurrentCells() {
         return Collections.singletonList(getCurrentMainCellCoordinates());
