@@ -1,38 +1,42 @@
 package ch.epfl.cs107.icmaze.area.maps;
 
 import ch.epfl.cs107.icmaze.Difficulty;
+import ch.epfl.cs107.icmaze.MazeGenerator;
 import ch.epfl.cs107.icmaze.actor.Portal;
+import ch.epfl.cs107.icmaze.actor.Rock;
 import ch.epfl.cs107.icmaze.area.ICMazeArea;
 import ch.epfl.cs107.play.engine.actor.Background;
 import ch.epfl.cs107.play.engine.actor.Foreground;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
+import ch.epfl.cs107.play.math.Orientation;
+
+import static ch.epfl.cs107.icmaze.MazeGenerator.createMaze;
+import static ch.epfl.cs107.icmaze.MazeGenerator.printMaze;
 
 public class SmallArea extends ICMazeArea {
+    private static final int KEY_ID = 1;
     private int difficulty;
 
     public SmallArea() {
         super("SmallArea", 8);
-        difficulty = Difficulty.HARDEST;
+        this.difficulty = Difficulty.HARDEST;
     }
 
     @Override
-    public DiscreteCoordinates getPlayerSpawnPosition() { return new DiscreteCoordinates(1, size/2 + 1); }
+    public DiscreteCoordinates getPlayerSpawnPosition() { return new DiscreteCoordinates(1, size / 2 + 1); }
 
-
+    @Override
     protected void createArea() {
-        registerActor(new Background(this, "SmallArea"));
-        registerActor(new Foreground(this, null, "SmallArea"));
-
+        generateMazeAndPlaceRocks(difficulty);
         createPortals();
 
         Portal westPortal = portals.get(AreaPortals.W);
         westPortal.setState(Portal.State.OPEN);
-        westPortal.setDestination("icmaze/Spawn", new DiscreteCoordinates(size, size / 2 + 1));
+        westPortal.setDestination("icmaze/Spawn", new DiscreteCoordinates(1, size / 2 + 1));
 
         Portal eastPortal = portals.get(AreaPortals.E);
         eastPortal.setState(Portal.State.OPEN);
-        eastPortal.setDestination("icmaze/MediumArea", new DiscreteCoordinates(1, 8));
-
+        eastPortal.setDestination("icmaze/MediumArea", new DiscreteCoordinates(16, 9));
 
         for (Portal p : portals.values()) registerActor(p);
     }

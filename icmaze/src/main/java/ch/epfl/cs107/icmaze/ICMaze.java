@@ -15,12 +15,16 @@ public class ICMaze extends AreaGame {
     private ICMazePlayer player;
     private int areaIndex;
 
-    private void createAreas() {
+    private void generateHardCodedLevel() {
         addArea(new Spawn());
         addArea(new BossArea());
         addArea(new SmallArea());
         addArea(new MediumArea());
         addArea(new LargeArea());
+    }
+
+    protected void createAreas(){
+        generateHardCodedLevel();
     }
 
     @Override
@@ -73,6 +77,9 @@ public class ICMaze extends AreaGame {
         if (player.getCurrentPortal() != null) {
             String destinArea = player.getCurrentPortal().getDestinationAreaName();
             DiscreteCoordinates destCoords = player.getCurrentPortal().getDestinationCoords();
+            System.out.print("coordonnées de la destination: ");
+            System.out.println(destCoords);
+            System.out.println("destination: " + destinArea);
 
             if (destinArea != null && destCoords != null) {
                 player.leaveArea();

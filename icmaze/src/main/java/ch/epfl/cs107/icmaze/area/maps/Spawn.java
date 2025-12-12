@@ -1,5 +1,6 @@
 package ch.epfl.cs107.icmaze.area.maps;
 
+import ch.epfl.cs107.icmaze.Difficulty;
 import ch.epfl.cs107.icmaze.actor.Portal;
 import ch.epfl.cs107.icmaze.actor.Rock;
 import ch.epfl.cs107.icmaze.actor.collectable.Heart;
@@ -12,6 +13,7 @@ import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
 
 public class Spawn extends ICMazeArea {
+    public static final int KEY_ID = 1;
 
     public Spawn() { super("SmallArea", 8); }
 

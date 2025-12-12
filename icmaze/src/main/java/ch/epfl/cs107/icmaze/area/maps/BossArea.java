@@ -8,6 +8,7 @@ import ch.epfl.cs107.play.math.DiscreteCoordinates;
 
 public class BossArea extends ICMazeArea {
 
+
     public BossArea() { super("SmallArea", 8); }
 
     @Override
@@ -22,7 +23,7 @@ public class BossArea extends ICMazeArea {
 
         Portal westPortal = portals.get(AreaPortals.W);
         westPortal.setState(Portal.State.OPEN);
-        westPortal.setDestination("icmaze/LargeArea", new DiscreteCoordinates(size, size / 2 + 1));
+        westPortal.setDestination("icmaze/LargeArea", new DiscreteCoordinates(size - 1, size / 2 + 1));
 
         for (Portal p : portals.values()) registerActor(p);
     }
