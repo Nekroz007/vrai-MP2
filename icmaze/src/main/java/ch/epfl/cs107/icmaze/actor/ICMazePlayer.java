@@ -26,16 +26,21 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     private final static int MOVE_DURATION = 8;
     private final Vector anchor = new Vector(0, 0);
     private final Vector anchor1 = new Vector(-0.5f, 0);
+
     private final Orientation[] orders = {DOWN, RIGHT, UP, LEFT};
     private final Orientation[] orders1 = {DOWN, UP, RIGHT, LEFT};
     private final OrientedAnimation animation;
-    private final ICMazePlayerInteractionHandler handler = new ICMazePlayerInteractionHandler();
     private final OrientedAnimation pickaxeAnimation;
+
+    private final ICMazePlayerInteractionHandler handler = new ICMazePlayerInteractionHandler();
     private enum State {IDLE, MOVING, INTERACTING, ATTACKING_WITH_PICKAXE}
     private State state = State.IDLE;
     private Portal currentPortal = null;
+
     private final List<Integer> collectedKeys = new ArrayList<>();
     private boolean hasPickaxe = false;
+
+
     public ICMazePlayer(Area area, Orientation orientation, DiscreteCoordinates position) {
         super(area, orientation, position);
         this.state = State.IDLE;
@@ -65,7 +70,6 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
 
         if (state == State.IDLE && interactKey.isPressed()) state = State.INTERACTING;
         if (state == State.INTERACTING && !interactKey.isDown()) state = State.IDLE;
-
         if (state == State.IDLE) {
             moveIfPressed(LEFT, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.left()));
             moveIfPressed(UP, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.up()));
@@ -90,10 +94,6 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
 
     public void collectKey(int keyId) {
         if (!collectedKeys.contains(keyId)) collectedKeys.add(keyId);
-    }
-
-    public boolean hasPickaxe() {
-        return hasPickaxe;
     }
 
     @Override
@@ -174,7 +174,6 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
 
         public void interactWith(Rock rock, boolean isCellInteraction) {
             if (state == State.ATTACKING_WITH_PICKAXE && !isCellInteraction) {
-                // Si on attaque le rocher (interaction à distance), on lui inflige des dégâts
                 rock.takeDamage(1);
             }
         }
