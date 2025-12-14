@@ -15,7 +15,7 @@ public class MediumArea extends ICMazeArea {
     public static final int KEY_ID = 2;
 
     public MediumArea() {
-        super("MediumArea", 16);
+        super("MediumArea", 16, KEY_ID);
         this.difficulty = Difficulty.HARDEST;
     }
 
@@ -35,7 +35,8 @@ public class MediumArea extends ICMazeArea {
         westPortal.setDestination("icmaze/SmallArea", new DiscreteCoordinates(8, 4));
 
         Portal eastPortal = portals.get(AreaPortals.E);
-        eastPortal.setState(Portal.State.OPEN);
+        eastPortal.setState(Portal.State.LOCKED);
+        eastPortal.setKeyId(KEY_ID);
         eastPortal.setDestination("icmaze/LargeArea", new DiscreteCoordinates(1, 16));
 
         for (Portal p : portals.values()) registerActor(p);

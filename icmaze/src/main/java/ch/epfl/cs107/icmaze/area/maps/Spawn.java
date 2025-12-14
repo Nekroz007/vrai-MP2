@@ -13,9 +13,8 @@ import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
 
 public class Spawn extends ICMazeArea {
-    public static final int KEY_ID = 1;
 
-    public Spawn() { super("SmallArea", 8); }
+    public Spawn() { super("SmallArea", 8, Portal.NO_KEY_ID); }
 
     @Override
     public DiscreteCoordinates getPlayerSpawnPosition() { return new DiscreteCoordinates(5, 7); }

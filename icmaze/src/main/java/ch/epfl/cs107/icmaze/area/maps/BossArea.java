@@ -9,7 +9,7 @@ import ch.epfl.cs107.play.math.DiscreteCoordinates;
 public class BossArea extends ICMazeArea {
 
 
-    public BossArea() { super("SmallArea", 8); }
+    public BossArea() { super("SmallArea", 8, Portal.NO_KEY_ID); }
 
     @Override
     public DiscreteCoordinates getPlayerSpawnPosition() { return new DiscreteCoordinates(size, size / 2 + 1); }

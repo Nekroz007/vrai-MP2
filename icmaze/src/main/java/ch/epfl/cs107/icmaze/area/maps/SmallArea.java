@@ -12,7 +12,7 @@ public class SmallArea extends ICMazeArea {
     private int difficulty;
 
     public SmallArea() {
-        super("SmallArea", 8);
+        super("SmallArea", 8, KEY_ID);
         this.difficulty = Difficulty.HARDEST;
     }
 
@@ -32,7 +32,8 @@ public class SmallArea extends ICMazeArea {
         westPortal.setDestination("icmaze/Spawn", new DiscreteCoordinates(8, 4));
 
         Portal eastPortal = portals.get(AreaPortals.E);
-        eastPortal.setState(Portal.State.OPEN);
+        eastPortal.setState(Portal.State.LOCKED);
+        eastPortal.setKeyId(KEY_ID);
         eastPortal.setDestination("icmaze/MediumArea", new DiscreteCoordinates( 1, 8));
 
         for (Portal p : portals.values()) registerActor(p);

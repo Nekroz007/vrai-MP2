@@ -1,15 +1,20 @@
 package ch.epfl.cs107.icmaze.area;
 
 import ch.epfl.cs107.icmaze.MazeGenerator;
+import ch.epfl.cs107.icmaze.RandomGenerator;
 import ch.epfl.cs107.icmaze.actor.Portal;
 import ch.epfl.cs107.icmaze.actor.Rock;
+import ch.epfl.cs107.icmaze.actor.collectable.Key;
+import ch.epfl.cs107.play.areagame.AreaGraph;
 import ch.epfl.cs107.play.areagame.area.Area;
 import ch.epfl.cs107.play.io.FileSystem;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
 import ch.epfl.cs107.play.window.Window;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class ICMazeArea extends Area {
@@ -22,13 +27,17 @@ public abstract class ICMazeArea extends Area {
     private float cameraScaleFactor = DEFAULT_SCALE_FACTOR;
     protected final int size;
 
+    protected final int keyId;
+    protected final AreaGraph graph = new AreaGraph();
+
     protected final Map<AreaPortals, Portal> portals = new HashMap<>();
     private static final int WALL_V = 1;
 
-    protected ICMazeArea(String behaviorName, int size) {
+    protected ICMazeArea(String behaviorName, int size, int keyId) {
         super();
         this.behaviorName = behaviorName;
         this.size = size;
+        this.keyId = keyId;
     }
 
     protected abstract void createArea();
@@ -122,26 +131,38 @@ public abstract class ICMazeArea extends Area {
         System.out.println("Génération Labyrinthe (Size: " + size + ")");
         MazeGenerator.printMaze(maze, getPlayerSpawnPosition(), new DiscreteCoordinates(size - 1, mid));
 
-        // Placement des rochers
+        // placement des rochers et construction du graphe
         for (int y = 0; y < getHeight(); y++) {
             for (int x = 0; x < getWidth(); x++) {
 
+                // 1 = mur
                 if (maze[y][x] == 1) {
 
-                    // on evite que les rochers soient sur la bordure
-                    boolean isBorder =
-                            (x == 0 || x == getWidth() - 1 ||
-                                    y == 0 || y == getHeight() - 1);
-
+                    // on evite les rochers sur les bordures
+                    boolean isBorder = (x == 0 || x == getWidth() - 1 || y == 0 || y == getHeight() - 1);
                     if (!isBorder) {
-                        registerActor(new Rock(
-                                this,
-                                Orientation.DOWN,
-                                new DiscreteCoordinates(x, y)
-                        ));
+                        registerActor(new Rock(this, Orientation.DOWN, new DiscreteCoordinates(x, y)));
                     }
+                }
+                // 0 = passage
+                else {
+                    boolean hasLeft  = (x > 0 && maze[y][x - 1] == 0);
+                    boolean hasUp    = (y < getHeight() - 1 && maze[y + 1][x] == 0);
+                    boolean hasRight = (x < getWidth() - 1 && maze[y][x + 1] == 0);
+                    boolean hasDown  = (y > 0 && maze[y - 1][x] == 0);
+
+                    graph.addNode(new DiscreteCoordinates(x, y), hasLeft, hasUp, hasRight, hasDown);
                 }
             }
         }
+
+        // placement aleatoire de la cle sur un passage
+        List<DiscreteCoordinates> coords = graph.keySet();
+        if (!coords.isEmpty()) {
+            Collections.shuffle(coords, RandomGenerator.rng);
+            DiscreteCoordinates keyPos = coords.get(0);
+            registerActor(new Key(this, Orientation.DOWN, keyPos, keyId));
+        }
     }
+
 }

@@ -25,20 +25,25 @@ import static ch.epfl.cs107.play.math.Orientation.*;
 public class ICMazePlayer extends ICMazeActor implements Interactor {
     private final static int MOVE_DURATION = 8;
     private final Vector anchor = new Vector(0, 0);
+    private final Vector anchor1 = new Vector(-0.5f, 0);
     private final Orientation[] orders = {DOWN, RIGHT, UP, LEFT};
+    private final Orientation[] orders1 = {DOWN, UP, RIGHT, LEFT};
     private final OrientedAnimation animation;
     private final ICMazePlayerInteractionHandler handler = new ICMazePlayerInteractionHandler();
-
-    private enum State {IDLE, MOVING, INTERACTING}
+    private final OrientedAnimation pickaxeAnimation;
+    private enum State {IDLE, MOVING, INTERACTING, ATTACKING_WITH_PICKAXE}
     private State state = State.IDLE;
     private Portal currentPortal = null;
     private final List<Integer> collectedKeys = new ArrayList<>();
-
+    private boolean hasPickaxe = false;
     public ICMazePlayer(Area area, Orientation orientation, DiscreteCoordinates position) {
         super(area, orientation, position);
         this.state = State.IDLE;
         this.animation = new OrientedAnimation("icmaze/player", 4, this, anchor, orders,
                 4, 1, 2, 16, 32, true);
+        this.pickaxeAnimation = new OrientedAnimation("icmaze/player.pickaxe",
+               5, this ,
+                anchor1 , orders1 , 4, 2, 2, 32, 32);
     }
 
     @Override
@@ -51,6 +56,12 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
         super.update(deltaTime);
         Keyboard keyboard = getOwnerArea().getKeyboard();
         Button interactKey = keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.interact());
+        Button itemKey = keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.pickaxe());
+
+        if (state == State.IDLE && itemKey.isPressed() && hasPickaxe) {
+            state = State.ATTACKING_WITH_PICKAXE;
+            pickaxeAnimation.reset();
+        }
 
         if (state == State.IDLE && interactKey.isPressed()) state = State.INTERACTING;
         if (state == State.INTERACTING && !interactKey.isDown()) state = State.IDLE;
@@ -62,12 +73,27 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
             moveIfPressed(DOWN, keyboard.get(KeyBindings.PLAYER_KEY_BINDINGS.down()));
         }
 
+        if (state == State.ATTACKING_WITH_PICKAXE) {
+            pickaxeAnimation.update(deltaTime);
+            if (pickaxeAnimation.isCompleted()) {
+                state = State.IDLE;
+                pickaxeAnimation.reset();
+            }
+        } else {
+            if (isDisplacementOccurs()) animation.update(deltaTime);
+            else animation.reset();
+        }
+
         if (isDisplacementOccurs()) animation.update(deltaTime);
         else animation.reset();
     }
 
     public void collectKey(int keyId) {
         if (!collectedKeys.contains(keyId)) collectedKeys.add(keyId);
+    }
+
+    public boolean hasPickaxe() {
+        return hasPickaxe;
     }
 
     @Override
@@ -94,7 +120,9 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     @Override
     public boolean wantsCellInteraction() { return true; }
     @Override
-    public boolean wantsViewInteraction() { return state == State.INTERACTING; }
+    public boolean wantsViewInteraction() {
+        return state == State.INTERACTING || state == State.ATTACKING_WITH_PICKAXE;
+    }
 
     public void centerCamera() { getOwnerArea().setViewCandidate(this); }
 
@@ -106,7 +134,14 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     }
 
     @Override
-    public void draw(Canvas canvas) { animation.draw(canvas); }
+    public void draw(Canvas canvas) {
+        // C'est ICI que l'animation est choisie
+        if (state == State.ATTACKING_WITH_PICKAXE) {
+            pickaxeAnimation.draw(canvas);
+        } else {
+            animation.draw(canvas);
+        }
+    }
 
     private class ICMazePlayerInteractionHandler implements ICMazeInteractionVisitor {
 
@@ -120,7 +155,10 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
         }
 
         public void interactWith(Pickaxe pickaxe, boolean isCellInteractable) {
-            if (isCellInteractable) pickaxe.collect();
+            if (isCellInteractable) {
+                pickaxe.collect();
+                hasPickaxe = true;
+            }
         }
 
         public void interactWith(Heart heart, boolean isCellInteractable) {
@@ -131,6 +169,13 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
             if (isCellInteraction) {
                 collectKey(key.getKeyId());
                 key.collect();
+            }
+        }
+
+        public void interactWith(Rock rock, boolean isCellInteraction) {
+            if (state == State.ATTACKING_WITH_PICKAXE && !isCellInteraction) {
+                // Si on attaque le rocher (interaction à distance), on lui inflige des dégâts
+                rock.takeDamage(1);
             }
         }
     }
