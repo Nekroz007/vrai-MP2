@@ -32,6 +32,7 @@ public abstract class ICMazeArea extends Area {
     }
 
     protected abstract void createArea();
+
     public abstract DiscreteCoordinates getPlayerSpawnPosition();
 
     @Override
@@ -93,27 +94,51 @@ public abstract class ICMazeArea extends Area {
     }
 
     protected void generateMazeAndPlaceRocks(int difficulty) {
-        // 1. Appel au générateur pour obtenir la grille d'entiers (0 = vide, 1 = mur)
+
+        // cree le labyrinthe
         int[][] maze = MazeGenerator.createMaze(getWidth(), getHeight(), difficulty);
+        int mid = size / 2;
+        int midY = getHeight() / 2;
+        int midX = getWidth() / 2;
+        int maxX = getWidth() - 1;
+        int maxY = getHeight() - 1;
 
-        // 2. Définition des positions d'entrée (Ouest) et de sortie (Est) à protéger
-        // Selon la consigne, on ne doit pas bloquer l'entrée ou la sortie.
-        DiscreteCoordinates entryPos = new DiscreteCoordinates(0, getHeight() / 2);
-        DiscreteCoordinates exitPos = new DiscreteCoordinates(getWidth() - 1, getHeight() / 2);
+        // on verifie que les portails ne sont pas bloques
+        // PORTAIL OUEST
+        maze[midY][0] = 0;
+        maze[midY][1] = 0;
 
-        // 3. Parcours de la grille pour placer les rochers
-        for (int y = 0; y < getHeight(); ++y) {
-            for (int x = 0; x < getWidth(); ++x) {
+        // PORTAIL EST
+        maze[midY][maxX] = 0;
+        maze[midY][maxX - 1] = 0;
 
-                // Si la case correspond à un mur (valeur 1)
+        // PORTAIL NORD
+        maze[0][midX] = 0;
+
+        // PORTAIL SUD
+        maze[maxY][midX] = 0;
+
+        // affichage du labyrinthe dans la console
+        System.out.println("Génération Labyrinthe (Size: " + size + ")");
+        MazeGenerator.printMaze(maze, getPlayerSpawnPosition(), new DiscreteCoordinates(size - 1, mid));
+
+        // Placement des rochers
+        for (int y = 0; y < getHeight(); y++) {
+            for (int x = 0; x < getWidth(); x++) {
+
                 if (maze[y][x] == 1) {
-                    DiscreteCoordinates coords = new DiscreteCoordinates(x, y);
 
-                    // Vérification : on ne place pas de rocher sur l'entrée ou la sortie
-                    if (!coords.equals(entryPos) && !coords.equals(exitPos)) {
-                        // Création et enregistrement du rocher
-                        // On suppose que Rock prend (Area, Orientation, Coordinates) en paramètres
-                        registerActor(new Rock(this, Orientation.DOWN, coords));
+                    // on evite que les rochers soient sur la bordure
+                    boolean isBorder =
+                            (x == 0 || x == getWidth() - 1 ||
+                                    y == 0 || y == getHeight() - 1);
+
+                    if (!isBorder) {
+                        registerActor(new Rock(
+                                this,
+                                Orientation.DOWN,
+                                new DiscreteCoordinates(x, y)
+                        ));
                     }
                 }
             }

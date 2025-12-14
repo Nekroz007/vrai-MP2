@@ -8,144 +8,104 @@ import ch.epfl.cs107.play.math.DiscreteCoordinates;
 public final class MazeGenerator {
     private static final int WALL = 1;
     private static final Random random = RandomGenerator.rng;
-    private static final int EMPTY = 0;
+    private static final int PASSAGE = 0;
 
     private MazeGenerator(){}
 
     public static int[][] createMaze(int width, int height, int difficulty) {
-        // 1. Initialisation de la grille vide (tout à 0 par défaut en Java) [cite: 333]
-        int[][] maze = new int[height][width];
+        if (width < 3 || height < 3) {
+            throw new IllegalArgumentException("width/height must be >= 3");
+        }
 
-        // 2. Lancement de la division récursive sur toute la zone
-        divide(maze, 0, 0, width, height, difficulty);
+        // Initialisation de la grille
+        int[][] grid = new int[height][width];
 
-        return maze;
+        // remplir avec des passages
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                grid[y][x] = PASSAGE;
+            }
+        }
+
+        // murs extérieurs
+        for (int x = 0; x < width; x++) {
+            grid[0][x] = WALL;
+            grid[height - 1][x] = WALL;
+        }
+        for (int y = 0; y < height; y++) {
+            grid[y][0] = WALL;
+            grid[y][width - 1] = WALL;
+        }
+
+        // diviser la région intérieure
+        divide(grid, 1, 1, width - 2, height - 2, difficulty);
+
+        return grid;
     }
 
     /**
-     * Méthode de division récursive.
-     * * @param maze       La grille à remplir
-     * @param x          Coordonnée X du coin haut-gauche de la sous-région
-     * @param y          Coordonnée Y du coin haut-gauche de la sous-région
-     * @param w          Largeur de la sous-région
-     * @param h          Hauteur de la sous-région
-     * @param difficulty Taille minimale pour continuer la division
+     * Division récursive
+     * x,y = coin supérieur gauche de la sous-région (inclus)
+     * width,height = taille de la sous-région
      */
-    private static void divide(int[][] maze, int x, int y, int w, int h, int difficulty) {
-        // 1. Cas de base : si la sous-région est trop petite, on arrête
-        if (w <= difficulty || h <= difficulty) {
+    private static void divide(int[][] grid, int x, int y, int width, int height, int difficulty) {
+        if (width <= difficulty || height <= difficulty) {
             return;
         }
 
-        // 2. Choix de l'orientation (Horizontal ou Vertical)
-        // On privilégie la direction la plus longue pour un aspect homogène
         boolean horizontal;
-        if (w > h) {
-            horizontal = false; // Couper verticalement (mur vertical)
-        } else if (h > w) {
-            horizontal = true;  // Couper horizontalement (mur horizontal)
-        } else {
-            horizontal = random.nextBoolean(); // Aléatoire si carré
-        }
+        if (width > height) horizontal = false;
+        else if (height > width) horizontal = true;
+        else horizontal = random.nextBoolean();
 
         if (horizontal) {
-            // --- AJOUT D'UN MUR HORIZONTAL ---
+            int possibleRange = height;
+            if (possibleRange <= 0) return;
 
-            // 3. Choisir un emplacement pour le mur (Y) à une position IMPAIRE
-            // On cherche un index valide dans [y, y + h - 1] qui soit impair.
-            int wallY = getRandomIndex(y, h, true);
+            int wallOffset = randomOdd(possibleRange);
+            int wallY = y + wallOffset;
 
-            // Si aucun emplacement valide n'est trouvé (ex: zone trop petite pour contenir un impair), on arrête.
-            if (wallY == -1) return;
-
-            // 4. Choisir un emplacement pour le passage (X) à une position PAIRE
-            int holeX = getRandomIndex(x, w, false);
-
-            // Dessiner le mur et le trou
-            for (int i = x; i < x + w; i++) {
-                if (i == holeX) {
-                    maze[wallY][i] = EMPTY; // Ouverture
-                } else {
-                    maze[wallY][i] = WALL;  // Mur
-                }
+            // mur horizontal
+            for (int i = x; i < x + width; i++) {
+                grid[wallY][i] = WALL;
             }
 
-            // 5. Appels récursifs sur les deux nouvelles sous-régions (Haut et Bas)
-            // Zone du haut (de y à wallY)
-            divide(maze, x, y, w, wallY - y, difficulty);
-            // Zone du bas (de wallY + 1 à la fin)
-            divide(maze, x, wallY + 1, w, (y + h) - (wallY + 1), difficulty);
+            // passage
+            int passageRange = width - 1;
+            int passageOffset = randomEven(passageRange);
+            int passageX = x + passageOffset;
+            grid[wallY][passageX] = PASSAGE;
+
+            int topHeight = wallY - y;
+            int bottomHeight = y + height - (wallY + 1);
+
+            divide(grid, x, y, width, topHeight, difficulty);
+            divide(grid, x, wallY + 1, width, bottomHeight, difficulty);
 
         } else {
-            // --- AJOUT D'UN MUR VERTICAL ---
+            int possibleRange = width;
+            if (possibleRange <= 0) return;
 
-            // 3. Choisir un emplacement pour le mur (X) à une position IMPAIRE
-            int wallX = getRandomIndex(x, w, true);
+            int wallOffset = randomOdd(possibleRange);
+            int wallX = x + wallOffset;
 
-            if (wallX == -1) return;
-
-            // 4. Choisir un emplacement pour le passage (Y) à une position PAIRE
-            int holeY = getRandomIndex(y, h, false);
-
-            // Dessiner le mur et le trou
-            for (int j = y; j < y + h; j++) {
-                if (j == holeY) {
-                    maze[j][wallX] = EMPTY;
-                } else {
-                    maze[j][wallX] = WALL;
-                }
+            // mur vertical
+            for (int i = y; i < y + height; i++) {
+                grid[i][wallX] = WALL;
             }
 
-            // 5. Appels récursifs (Gauche et Droite)
-            // Zone de gauche
-            divide(maze, x, y, wallX - x, h, difficulty);
-            // Zone de droite
-            divide(maze, wallX + 1, y, (x + w) - (wallX + 1), h, difficulty);
+            // passage
+            int passageRange = height - 1;
+            int passageOffset = randomEven(passageRange);
+            int passageY = y + passageOffset;
+            grid[passageY][wallX] = PASSAGE;
+
+            int leftWidth = wallX - x;
+            int rightWidth = x + width - (wallX + 1);
+
+            divide(grid, x, y, leftWidth, height, difficulty);
+            divide(grid, wallX + 1, y, rightWidth, height, difficulty);
         }
-    }
-
-    /**
-     * Helper pour trouver un index aléatoire pair ou impair dans une plage donnée.
-     * * @param start L'index de départ (offset global)
-     * @param length La taille de la zone
-     * @param mustBeOdd true si on veut un nombre impair, false pour pair
-     * @return Un index valide ou -1 si impossible
-     */
-    private static int getRandomIndex(int start, int length, boolean mustBeOdd) {
-        // On liste les candidats valides dans la plage [start, start + length - 1]
-        // Note: une approche plus optimisée mathématiquement est possible,
-        // mais une boucle est plus simple à lire et robuste pour les petites tailles de labyrinthe.
-
-        // On compte d'abord combien il y a de candidats
-        int count = 0;
-        for (int i = 0; i < length; i++) {
-            int val = start + i;
-            if (mustBeOdd) {
-                if (val % 2 != 0) count++;
-            } else {
-                if (val % 2 == 0) count++;
-            }
-        }
-
-        if (count == 0) return -1;
-
-        // On choisit le k-ième candidat
-        int targetIndex = random.nextInt(count);
-
-        // On retrouve la valeur correspondante
-        int currentCount = 0;
-        for (int i = 0; i < length; i++) {
-            int val = start + i;
-            boolean isMatch = mustBeOdd ? (val % 2 != 0) : (val % 2 == 0);
-
-            if (isMatch) {
-                if (currentCount == targetIndex) {
-                    return val;
-                }
-                currentCount++;
-            }
-        }
-        return -1; // Ne devrait pas arriver
     }
 
 

@@ -32,7 +32,7 @@ public class LargeArea extends ICMazeArea {
 
         Portal westPortal = portals.get(AreaPortals.W);
         westPortal.setState(Portal.State.OPEN);
-        westPortal.setDestination("icmaze/MediumArea", new DiscreteCoordinates(16, 8));
+        westPortal.setDestination("icmaze/MediumArea", new DiscreteCoordinates(15, 8));
 
         Portal eastPortal = portals.get(AreaPortals.E);
         eastPortal.setState(Portal.State.OPEN);
