@@ -44,9 +44,17 @@ public final class MazeGenerator {
     }
 
     /**
-     * Division récursive
-     * x,y = coin supérieur gauche de la sous-région (inclus)
+     *
      * width,height = taille de la sous-région
+     */
+    /**
+     * Division récursive
+     * @param grid
+     * @param x coord x du coin sup gauche de la sous-région (inclus)
+     * @param y coord y du coin sup gauche de la sous-région (inclus)
+     * @param width largeur de la sous-région
+     * @param height longueur de la sous-région
+     * @param difficulty
      */
     private static void divide(int[][] grid, int x, int y, int width, int height, int difficulty) {
         if (width <= difficulty || height <= difficulty) {

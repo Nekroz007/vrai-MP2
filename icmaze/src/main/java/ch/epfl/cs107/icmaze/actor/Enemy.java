@@ -38,9 +38,7 @@ public abstract class Enemy extends ICMazeActor implements Interactor, Interacta
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        if (!dead && isDead()) {
-            die();
-        }
+        if (!dead && isDead()) die();
         if (dead && vanishAnimation != null) {
             vanishAnimation.update(deltaTime);
             if (vanishAnimation.isCompleted()) {

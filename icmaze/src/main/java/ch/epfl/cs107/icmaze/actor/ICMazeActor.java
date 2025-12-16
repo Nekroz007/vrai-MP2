@@ -62,11 +62,10 @@ public abstract class ICMazeActor extends MovableAreaEntity{
     }
 
     protected void decreaseHealth(int amount) {
-        if (immunityTimer > 0) {
-            return;
+        if (immunityTimer <= 0){ // Only decrease health when timer is down
+            health.decrease(amount);
+            immunityTimer = MAX_IMMUNITY;
         }
-        health.decrease(amount);
-        immunityTimer = MAX_IMMUNITY;
     }
 
     protected void increaseHealth(int amount) {

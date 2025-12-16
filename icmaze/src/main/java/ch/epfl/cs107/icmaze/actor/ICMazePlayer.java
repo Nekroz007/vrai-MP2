@@ -205,5 +205,10 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
                 logMonster.decreaseHealth(1);
             }
         }
+        public void interactWith (FireProjectile fireProjectile, boolean isCellInteraction) {
+            if (state == State.ATTACKING_WITH_PICKAXE && !isCellInteraction) {
+                //TODO: Compléter l'interaction entre le player et le fireprojectile
+            }
+        }
     }
 }
