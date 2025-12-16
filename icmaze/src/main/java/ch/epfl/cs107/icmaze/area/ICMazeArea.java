@@ -19,16 +19,16 @@ public abstract class ICMazeArea extends Area {
     public static final float DEFAULT_SCALE_FACTOR = 11.f;
     private final String behaviorName;
     private static final float DYNAMIC_SCALE_MULTIPLIER = 1.375f;
-    private static final float MAXIMUM_SCALE = 30f;
+    private static final float MAXIMUM_SCALE = 50f;
 
-    private float cameraScaleFactor = DEFAULT_SCALE_FACTOR;
     protected final int size;
-
     protected final int keyId;
     protected final AreaGraph graph = new AreaGraph();
-
     protected final Map<AreaPortals, Portal> portals = new HashMap<>();
-    private static final int WALL_V = 1;
+
+    // NOUVEAU : Pour savoir quels murs casser
+    protected Orientation entryOrientation = null;
+    protected Orientation exitOrientation = null;
 
     protected ICMazeArea(String behaviorName, int size, int keyId) {
         super();
@@ -39,6 +39,18 @@ public abstract class ICMazeArea extends Area {
 
     protected abstract void createArea();
 
+    public void setEntryOrientation(Orientation entryOrientation) {
+        this.entryOrientation = entryOrientation;
+    }
+    public void setExitOrientation(Orientation exitOrientation) {
+        this.exitOrientation = exitOrientation;
+    }
+    public int getKeyId() {
+        return keyId;
+    }
+    public int getSize() {
+        return size;
+    }
     public abstract DiscreteCoordinates getPlayerSpawnPosition();
 
     @Override
@@ -100,82 +112,102 @@ public abstract class ICMazeArea extends Area {
         return graph.shortestPath(from, to);
     }
 
-
-    protected void registerPortal(AreaPortals type, String destName, DiscreteCoordinates destCoords, Portal.State state, int keyId) {
-        Portal portal = portals.get(type);
-        if (portal != null) {
-            portal.setDestination(destName, destCoords);
-            portal.setState(state);
-            portal.setKeyId(keyId);
-        }
-    }
-
     @Override
     public float getCameraScaleFactor() {
-        return (float) Math.min(size * DYNAMIC_SCALE_MULTIPLIER, MAXIMUM_SCALE);
+        // Calcul : Taille * Multiplicateur
+        float calculatedScale = size * DYNAMIC_SCALE_MULTIPLIER;
+
+        // On s'assure juste que ça ne devient pas GIGANTESQUE (plafond de sécurité)
+        // Avec MAXIMUM_SCALE à 50f, une LargeArea (taille 32 -> scale 44) passera sans être bloquée.
+        return Math.min(calculatedScale, MAXIMUM_SCALE);
     }
 
     protected void generateMazeAndPlaceRocks(int difficulty) {
-
-        // cree le labyrinthe
         int[][] maze = MazeGenerator.createMaze(getWidth(), getHeight(), difficulty);
-        int mid = size / 2;
+
         int midY = getHeight() / 2;
         int midX = getWidth() / 2;
         int maxX = getWidth() - 1;
         int maxY = getHeight() - 1;
 
-        // on verifie que les portails ne sont pas bloques
-        // PORTAIL OUEST
-        maze[midY][0] = 0;
-        maze[midY][1] = 0;
+        // --- CORRECTION 1 : REBOUCHER TOUS LES BORDS D'ABORD ---
+        // On s'assure que les 4 emplacements de portails sont des MURS (1) par défaut
+        // Ouest
+        maze[midY][0] = 1;      maze[midY][1] = 1;
+        // Est
+        maze[midY][maxX] = 1;   maze[midY][maxX - 1] = 1;
+        // Nord
+        maze[maxY][midX] = 1;   maze[maxY - 1][midX] = 1;
+        // Sud
+        maze[0][midX] = 1;      maze[1][midX] = 1;
 
-        // PORTAIL EST
-        maze[midY][maxX] = 0;
-        maze[midY][maxX - 1] = 0;
+        // --- CORRECTION 2 : OUVRIR UNIQUEMENT CEUX NÉCESSAIRES ---
 
-        // PORTAIL NORD
-        maze[0][midX] = 0;
+        // Ouvrir OUEST seulement si c'est l'entrée ou la sortie
+        if (entryOrientation == Orientation.LEFT || exitOrientation == Orientation.LEFT) {
+            maze[midY][0] = 0; maze[midY][1] = 0;
+        }
+        // Ouvrir EST seulement si c'est l'entrée ou la sortie
+        if (entryOrientation == Orientation.RIGHT || exitOrientation == Orientation.RIGHT) {
+            maze[midY][maxX] = 0; maze[midY][maxX - 1] = 0;
+        }
+        // Ouvrir NORD seulement si c'est l'entrée ou la sortie
+        if (entryOrientation == Orientation.UP || exitOrientation == Orientation.UP) {
+            maze[maxY][midX] = 0; maze[maxY - 1][midX] = 0;
+        }
+        // Ouvrir SUD seulement si c'est l'entrée ou la sortie
+        if (entryOrientation == Orientation.DOWN || exitOrientation == Orientation.DOWN) {
+            maze[0][midX] = 0; maze[1][midX] = 0;
+        }
 
-        // PORTAIL SUD
-        maze[maxY][midX] = 0;
-
-        // affichage du labyrinthe dans la console
-        System.out.println("Génération Labyrinthe (Size: " + size + ")");
-        MazeGenerator.printMaze(maze, getPlayerSpawnPosition(), new DiscreteCoordinates(size - 1, mid));
-
-        // placement des rochers et construction du graphe
+        // (Le reste de la méthode ne change pas : printMaze, placement rochers, clés...)
+        // ...
+        // Placement des Rochers
         for (int y = 0; y < getHeight(); y++) {
             for (int x = 0; x < getWidth(); x++) {
-
-                // 1 = mur
                 if (maze[y][x] == 1) {
-
-                    // on evite les rochers sur les bordures
-                    boolean isBorder = (x == 0 || x == getWidth() - 1 || y == 0 || y == getHeight() - 1);
-                    if (!isBorder) {
-                        registerActor(new Rock(this, Orientation.DOWN, new DiscreteCoordinates(x, y)));
-                    }
-                }
-                // 0 = passage
-                else {
-                    boolean hasLeft  = (x > 0 && maze[y][x - 1] == 0);
-                    boolean hasUp    = (y < getHeight() - 1 && maze[y + 1][x] == 0);
-                    boolean hasRight = (x < getWidth() - 1 && maze[y][x + 1] == 0);
-                    boolean hasDown  = (y > 0 && maze[y - 1][x] == 0);
-
+                    boolean isBorder = (x == 0 || x == maxX || y == 0 || y == maxY);
+                    if (!isBorder) registerActor(new Rock(this, Orientation.DOWN, new DiscreteCoordinates(x, y)));
+                } else {
+                    boolean hasLeft = x > 0 && maze[y][x - 1] == 0;
+                    boolean hasUp = y < maxY && maze[y + 1][x] == 0;
+                    boolean hasRight = x < maxX && maze[y][x + 1] == 0;
+                    boolean hasDown = y > 0 && maze[y - 1][x] == 0;
                     graph.addNode(new DiscreteCoordinates(x, y), hasLeft, hasUp, hasRight, hasDown);
                 }
             }
         }
 
-        // placement aleatoire de la cle sur un passage
-        List<DiscreteCoordinates> coords = graph.keySet();
-        if (!coords.isEmpty()) {
-            Collections.shuffle(coords, RandomGenerator.rng);
-            DiscreteCoordinates keyPos = coords.get(0);
-            registerActor(new Key(this, Orientation.DOWN, keyPos, keyId));
+        // Placement clé
+        if (keyId != Portal.NO_KEY_ID) {
+            List<DiscreteCoordinates> coords = new ArrayList<>(graph.keySet());
+            if (!coords.isEmpty()) {
+                Collections.shuffle(coords, RandomGenerator.rng);
+                registerActor(new Key(this, Orientation.DOWN, coords.get(0), keyId));
+            }
         }
     }
 
+    // Ta méthode registerPortal existante est OK, assure-toi juste qu'elle gère bien les updates
+    protected void registerPortal(AreaPortals type, String destName, DiscreteCoordinates destCoords, Portal.State state, int keyId) {
+        Portal portal = portals.get(type);
+        if (portal != null) {
+            portal.setDestination(destName, destCoords);
+            portal.setState(state); // Rend visible/ouvert uniquement si demandé
+            portal.setKeyId(keyId);
+        }
+    }
+
+    private DiscreteCoordinates getPortalCoordinates(Orientation orient, int midX, int midY, int maxX, int maxY) {
+        if (orient == null) return null;
+        switch (orient) {
+            case LEFT:  return new DiscreteCoordinates(0, midY);      // Ouest
+            case RIGHT: return new DiscreteCoordinates(maxX, midY);   // Est
+            case UP:    return new DiscreteCoordinates(midX, maxY);   // Nord
+            case DOWN:  return new DiscreteCoordinates(midX, 0);      // Sud
+            default:    return null;
+        }
+    }
 }
+
+

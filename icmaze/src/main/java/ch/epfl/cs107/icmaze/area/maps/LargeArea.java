@@ -16,16 +16,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class LargeArea extends ICMazeArea {
-    public static final int KEY_ID = 3;
     private final int difficulty;
-    private final Orientation entry;
-    private final Orientation exit;
 
-    public LargeArea(Orientation entry, Orientation exit, int keyId, int difficulty) {
+    public LargeArea(int difficulty, int keyId) {
         super("LargeArea", 32, keyId);
-        this.entry = entry;
-        this.exit = exit;
         this.difficulty = difficulty;
+        createPortals();
     }
 
     @Override
@@ -34,12 +30,8 @@ public class LargeArea extends ICMazeArea {
 
     protected void createArea() {
         registerActor(new Background(this, "LargeArea"));
+
         generateMazeAndPlaceRocks(difficulty);
-
-        createPortals();
-
-        registerPortal(AreaPortals.W, "icmaze/MediumArea", new DiscreteCoordinates(15, 8), Portal.State.OPEN, Portal.NO_KEY_ID);
-        registerPortal(AreaPortals.E, "icmaze/Boss", new DiscreteCoordinates(1, 4), Portal.State.LOCKED, KEY_ID);
 
         for (Portal p : portals.values()) registerActor(p);
 
@@ -84,5 +76,6 @@ public class LargeArea extends ICMazeArea {
     }
 
     @Override
-    public String getTitle() { return "icmaze/LargeArea"; }
+    public String getTitle() {
+        return "icmaze/LargeArea" + this.hashCode(); }
 }

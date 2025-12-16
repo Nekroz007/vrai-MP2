@@ -16,16 +16,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class MediumArea extends ICMazeArea {
-    public static final int KEY_ID = 2;
     private final int difficulty;
-    private final Orientation entry;
-    private final Orientation exit;
 
-    public MediumArea(Orientation entry, Orientation exit, int keyId, int difficulty) {
+    public MediumArea(int difficulty, int keyId) {
         super("MediumArea", 16, keyId);
-        this.entry = entry;
-        this.exit = exit;
         this.difficulty = difficulty;
+        createPortals();
     }
 
     @Override
@@ -35,12 +31,8 @@ public class MediumArea extends ICMazeArea {
     protected void createArea() {
         registerActor(new Background(this, "MediumArea"));
         registerActor(new Foreground(this, null, "MediumArea"));
+
         generateMazeAndPlaceRocks(difficulty);
-
-        createPortals();
-
-        registerPortal(AreaPortals.W, "icmaze/SmallArea", new DiscreteCoordinates(8, 4), Portal.State.OPEN, Portal.NO_KEY_ID);
-        registerPortal(AreaPortals.E, "icmaze/LargeArea", new DiscreteCoordinates(1, 16), Portal.State.LOCKED, KEY_ID);
 
         for (Portal p : portals.values()) registerActor(p);
 
@@ -86,5 +78,6 @@ public class MediumArea extends ICMazeArea {
 
 
     @Override
-    public String getTitle() { return "icmaze/MediumArea"; }
+    public String getTitle() {
+        return "icmaze/MediumArea" + this.hashCode(); }
 }

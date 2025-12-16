@@ -17,26 +17,17 @@ public class ICMaze extends AreaGame {
     private int areaIndex;
 
     private void generateHardCodedLevel() {
-        addArea(new Spawn());
-        addArea(new BossArea());
-        addArea(new SmallArea());
-        addArea(new MediumArea());
-        addArea(new LargeArea());
+        ;
     }
 
-    @Override
     protected void createAreas() {
-        // Génération procédurale (Etape 4.3)
-        // On génère 3 salles intermédiaires par exemple (paramètre length)
-        ICMazeArea[] generatedAreas = LevelGenerator.generateLine(this, 3);
+        int labyrinthCount = 4;
 
-        // Enregistrement de toutes les aires générées
-        for (ICMazeArea area : generatedAreas) {
+        ICMazeArea[] levels = LevelGenerator.generateLine(this, labyrinthCount);
+
+        for (ICMazeArea area : levels) {
             addArea(area);
         }
-
-        // Ancienne méthode (commentée comme demandé pour pouvoir revenir en arrière)
-        // generateHardCodedLevel();
     }
 
     @Override

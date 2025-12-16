@@ -14,16 +14,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class SmallArea extends ICMazeArea {
-    private static final int KEY_ID = 1;
-    private final int difficulty;
-    private final Orientation entry;
-    private final Orientation exit;
 
-    public SmallArea(Orientation entry, Orientation exit, int keyId, int difficulty) {
+    private int difficulty;
+
+    public SmallArea(int difficulty, int keyId) {
         super("SmallArea", 8, keyId);
-        this.entry = entry;
-        this.exit = exit;
         this.difficulty = difficulty;
+        createPortals();
     }
 
     @Override
@@ -35,10 +32,6 @@ public class SmallArea extends ICMazeArea {
         registerActor(new Foreground(this, null, "SmallArea"));
 
         generateMazeAndPlaceRocks(difficulty);
-        createPortals();
-
-        registerPortal(AreaPortals.W, "icmaze/Spawn", new DiscreteCoordinates(8, 4), Portal.State.OPEN, Portal.NO_KEY_ID);
-        registerPortal(AreaPortals.E, "icmaze/MediumArea", new DiscreteCoordinates(1, 8), Portal.State.LOCKED, KEY_ID);
 
         for (Portal p : portals.values()) registerActor(p);
 
@@ -82,5 +75,7 @@ public class SmallArea extends ICMazeArea {
     }
 
     @Override
-    public String getTitle() { return "icmaze/SmallArea"; }
+    public String getTitle() {
+        return "icmaze/SmallArea" + this.hashCode();
+    }
 }
