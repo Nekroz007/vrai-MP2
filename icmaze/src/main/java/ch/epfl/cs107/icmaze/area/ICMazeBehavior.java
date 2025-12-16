@@ -22,7 +22,7 @@ public class ICMazeBehavior extends AreaBehavior{
     public enum ICMazeCellType {
         NULL(0, false),
         GROUND(-16777216, true),
-        WALL(-14112955, false),
+        WALL(-16711936, false),
         HOLE(-65536, true),
         ;
 

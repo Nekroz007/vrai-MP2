@@ -37,6 +37,7 @@ public class Spawn extends ICMazeArea {
         eastPortal.setKeyId(Integer.MAX_VALUE);
 
         for (Portal p : portals.values()) registerActor(p);
+
     }
 
     @Override

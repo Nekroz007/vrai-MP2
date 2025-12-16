@@ -1,5 +1,6 @@
 package ch.epfl.cs107.icmaze.actor;
 
+import ch.epfl.cs107.icmaze.ICMaze;
 import ch.epfl.cs107.icmaze.KeyBindings;
 import ch.epfl.cs107.icmaze.actor.collectable.Heart;
 import ch.epfl.cs107.icmaze.actor.collectable.Key;
@@ -11,6 +12,7 @@ import ch.epfl.cs107.play.areagame.area.Area;
 import ch.epfl.cs107.play.engine.actor.OrientedAnimation;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
+import ch.epfl.cs107.play.math.Transform;
 import ch.epfl.cs107.play.math.Vector;
 import ch.epfl.cs107.play.window.Button;
 import ch.epfl.cs107.play.window.Canvas;
@@ -40,9 +42,11 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     private final List<Integer> collectedKeys = new ArrayList<>();
     private boolean hasPickaxe = false;
 
+    public static final int MAX_HP = 5;
+
 
     public ICMazePlayer(Area area, Orientation orientation, DiscreteCoordinates position) {
-        super(area, orientation, position);
+        super(area, orientation, position, MAX_HP, true);
         this.state = State.IDLE;
         this.animation = new OrientedAnimation("icmaze/player", 4, this, anchor, orders,
                 4, 1, 2, 16, 32, true);
@@ -50,7 +54,6 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
                5, this ,
                 anchor1 , orders1 , 4, 2, 2, 32, 32);
     }
-
     @Override
     public void acceptInteraction(ch.epfl.cs107.play.areagame.handler.AreaInteractionVisitor v, boolean isCellInteraction) {
         ((ICMazeInteractionVisitor) v).interactWith(this, isCellInteraction);
@@ -136,12 +139,21 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     @Override
     public void draw(Canvas canvas) {
         // C'est ICI que l'animation est choisie
-        if (state == State.ATTACKING_WITH_PICKAXE) {
-            pickaxeAnimation.draw(canvas);
-        } else {
-            animation.draw(canvas);
+        if (Math.ceil(immunityTimer) - immunityTimer > 0.5f) {
+            return; // we only draw every 0.5 seconds.
+            // TODO: move this up to ICMazeActor since also used by Enemy
+        }
+        switch (state) {
+            case ATTACKING_WITH_PICKAXE:
+                pickaxeAnimation.draw(canvas);
+                break;
+            case null, default:
+                animation.draw(canvas);
+                break;
         }
     }
+
+
 
     private class ICMazePlayerInteractionHandler implements ICMazeInteractionVisitor {
 
@@ -162,7 +174,12 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
         }
 
         public void interactWith(Heart heart, boolean isCellInteractable) {
-            if (isCellInteractable) heart.collect();
+            // collect heart and add to health
+            if (isCellInteractable) {
+                heart.collect();
+                increaseHealth(heart.HEALING_HP);
+            }
+
         }
 
         public void interactWith(Key key, boolean isCellInteraction) {
@@ -175,6 +192,13 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
         public void interactWith(Rock rock, boolean isCellInteraction) {
             if (state == State.ATTACKING_WITH_PICKAXE && !isCellInteraction) {
                 rock.takeDamage(1);
+            }
+        }
+        public void interactWith (LogMonster logMonster, boolean isCellInteraction) {
+            if (isCellInteraction) {
+                decreaseHealth(1); // TODO: remove magic number, replace by static attribute of the monster
+                immunityTimer = 3f; // TODO: again, remove magic number
+
             }
         }
     }

@@ -11,6 +11,7 @@ import ch.epfl.cs107.play.window.Canvas;
 
 public class Heart extends ICMazeCollectable{
    private final Animation animation;
+   public static int HEALING_HP = 1;
 
     public Heart (Area area, Orientation orientation, DiscreteCoordinates position) {
         super(area, orientation, position);

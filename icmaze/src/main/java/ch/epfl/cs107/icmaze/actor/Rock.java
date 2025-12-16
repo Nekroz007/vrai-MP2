@@ -17,6 +17,7 @@ import ch.epfl.cs107.play.window.Canvas;
 import java.util.Collections;
 import java.util.List;
 
+// TODO: Why this isn't an actor ?
 public class Rock extends AreaEntity {
         private final Sprite sprite;
         private int hp;

@@ -12,10 +12,7 @@ import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
 import ch.epfl.cs107.play.window.Window;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class ICMazeArea extends Area {
 
@@ -96,6 +93,13 @@ public abstract class ICMazeArea extends Area {
                 Portal.NO_KEY_ID,
                 Portal.State.INVISIBLE));
     }
+    public Queue<Orientation> shortestPath(
+            DiscreteCoordinates from,
+            DiscreteCoordinates to) {
+
+        return graph.shortestPath(from, to);
+    }
+
 
     @Override
     public float getCameraScaleFactor() {

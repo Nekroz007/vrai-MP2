@@ -1,6 +1,7 @@
 package ch.epfl.cs107.icmaze.handler;
 
 import ch.epfl.cs107.icmaze.actor.ICMazePlayer;
+import ch.epfl.cs107.icmaze.actor.LogMonster;
 import ch.epfl.cs107.icmaze.actor.Portal;
 import ch.epfl.cs107.icmaze.actor.Rock;
 import ch.epfl.cs107.icmaze.actor.collectable.Heart;
@@ -22,6 +23,5 @@ public interface ICMazeInteractionVisitor extends AreaInteractionVisitor {
     default void interactWith(Key key, boolean isCellInteraction) { ; }
     default void interactWith(Portal portal, boolean isCellInteraction) { ; }
     default void interactWith(Rock rock, boolean isCellInteraction) { ; }
-
-
+    default void interactWith(LogMonster logMonster, boolean isCellInteraction) { ; }
 }

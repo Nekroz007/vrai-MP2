@@ -15,6 +15,11 @@ public class ICMaze extends AreaGame {
     private ICMazePlayer player;
     private int areaIndex;
 
+    @Override
+    public int getFrameRate() {
+        return 60;
+    }
+
     private void generateHardCodedLevel() {
         addArea(new Spawn());
         addArea(new BossArea());
@@ -47,11 +52,15 @@ public class ICMaze extends AreaGame {
         }
         switchArea();
         super.update(deltaTime);
+        if (player != null && player.isDead()){
+            resetGame();
+        }
     }
     private void resetGame() {
         createAreas();
         areaIndex = 0;
         initArea(areas[areaIndex]);
+        player.resetHealth();
     }
 
     @Override
