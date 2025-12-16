@@ -9,11 +9,13 @@ import ch.epfl.cs107.play.areagame.actor.Interactor;
 import ch.epfl.cs107.play.areagame.area.Area;
 import ch.epfl.cs107.play.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.engine.actor.OrientedAnimation;
+import ch.epfl.cs107.play.engine.actor.Path;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
 import ch.epfl.cs107.play.math.Vector;
 import ch.epfl.cs107.play.window.Canvas;
 
+import java.util.LinkedList;
 import java.util.Queue;
 
 public class LogMonster extends PathFinderEnemy implements Interactor, Interactable {
@@ -37,6 +39,7 @@ public class LogMonster extends PathFinderEnemy implements Interactor, Interacta
     private int difficulty;
     private Cooldown orientationCooldown = new Cooldown(ORIENTATION_COOLDOWN);
     private Cooldown stateCooldown = new Cooldown(STATE_COOLDOWN);
+    private Path graphicPath;
 
     public LogMonster(Area area, Orientation orientation, DiscreteCoordinates position, State initialState){
         super (area, orientation, position, MAX_HP);
@@ -150,6 +153,10 @@ public class LogMonster extends PathFinderEnemy implements Interactor, Interacta
     }
     @Override
     public void draw (Canvas canvas){
+        if (graphicPath != null){
+            graphicPath.draw(canvas);
+        }
+
         switch (state){
             case CHASING:
                 chasingAnimation.draw(canvas);
@@ -164,7 +171,10 @@ public class LogMonster extends PathFinderEnemy implements Interactor, Interacta
     }
     @Override
     protected Orientation getNextOrientation() {
-        if (target == null) return null;
+        if (target == null){
+            graphicPath = null;
+            return null;
+        }
 
         Queue<Orientation> path =
                 ((ICMazeArea) getOwnerArea())
@@ -174,8 +184,11 @@ public class LogMonster extends PathFinderEnemy implements Interactor, Interacta
                         );
 
         if (path == null || path.isEmpty()) {
+            graphicPath = null;
             return null;
         }
+
+        graphicPath = new Path(getPosition(), new LinkedList<>(path));
 
         return path.poll();
     }
