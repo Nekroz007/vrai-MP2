@@ -31,10 +31,7 @@ public class Spawn extends ICMazeArea {
 
         createPortals();
 
-        Portal eastPortal = portals.get(ICMazeArea.AreaPortals.E);
-        eastPortal.setState(Portal.State.LOCKED);
-        eastPortal.setDestination("icmaze/SmallArea", new DiscreteCoordinates(1,4));
-        eastPortal.setKeyId(Integer.MAX_VALUE);
+        registerPortal(AreaPortals.E, "icmaze/SmallArea", new DiscreteCoordinates(1, 4), Portal.State.LOCKED, Integer.MAX_VALUE);
 
         for (Portal p : portals.values()) registerActor(p);
 

@@ -81,6 +81,7 @@ public class Portal extends AreaEntity implements Interactable {
     }
 
     public boolean isOpen() { return state == State.OPEN; }
+
     public boolean isLocked() { return state == State.LOCKED; }
 
     public String getDestinationAreaName() { return destinationAreaName; }

@@ -61,7 +61,6 @@ public class Rock extends AreaEntity {
                     isInvulnerable = false;
                 }
             }
-
             if (isDying) {
                 deathAnimation.update(deltaTime);
                 if (deathAnimation.isCompleted()) {

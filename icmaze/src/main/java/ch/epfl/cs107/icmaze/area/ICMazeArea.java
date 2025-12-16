@@ -101,6 +101,15 @@ public abstract class ICMazeArea extends Area {
     }
 
 
+    protected void registerPortal(AreaPortals type, String destName, DiscreteCoordinates destCoords, Portal.State state, int keyId) {
+        Portal portal = portals.get(type);
+        if (portal != null) {
+            portal.setDestination(destName, destCoords);
+            portal.setState(state);
+            portal.setKeyId(keyId);
+        }
+    }
+
     @Override
     public float getCameraScaleFactor() {
         return (float) Math.min(size * DYNAMIC_SCALE_MULTIPLIER, MAXIMUM_SCALE);

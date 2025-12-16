@@ -36,7 +36,7 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
 
     private final ICMazePlayerInteractionHandler handler = new ICMazePlayerInteractionHandler();
     private enum State {IDLE, MOVING, INTERACTING, ATTACKING_WITH_PICKAXE}
-    private State state = State.IDLE;
+    private State state;
     private Portal currentPortal = null;
 
     private final List<Integer> collectedKeys = new ArrayList<>();
@@ -108,6 +108,7 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     public boolean takeCellSpace() { return true; }
 
     public Portal getCurrentPortal() { return currentPortal; }
+
     public void resetPortal() { currentPortal = null; }
 
     @Override

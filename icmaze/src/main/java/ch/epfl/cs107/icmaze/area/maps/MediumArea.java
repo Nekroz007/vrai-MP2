@@ -35,14 +35,8 @@ public class MediumArea extends ICMazeArea {
 
         createPortals();
 
-        Portal westPortal = portals.get(AreaPortals.W);
-        westPortal.setState(Portal.State.OPEN);
-        westPortal.setDestination("icmaze/SmallArea", new DiscreteCoordinates(8, 4));
-
-        Portal eastPortal = portals.get(AreaPortals.E);
-        eastPortal.setState(Portal.State.LOCKED);
-        eastPortal.setKeyId(KEY_ID);
-        eastPortal.setDestination("icmaze/LargeArea", new DiscreteCoordinates(1, 16));
+        registerPortal(AreaPortals.W, "icmaze/SmallArea", new DiscreteCoordinates(8, 4), Portal.State.OPEN, Portal.NO_KEY_ID);
+        registerPortal(AreaPortals.E, "icmaze/LargeArea", new DiscreteCoordinates(1, 16), Portal.State.LOCKED, KEY_ID);
 
         for (Portal p : portals.values()) registerActor(p);
 

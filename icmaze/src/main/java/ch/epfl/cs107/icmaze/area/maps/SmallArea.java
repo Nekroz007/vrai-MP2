@@ -33,14 +33,8 @@ public class SmallArea extends ICMazeArea {
         generateMazeAndPlaceRocks(difficulty);
         createPortals();
 
-        Portal westPortal = portals.get(AreaPortals.W);
-        westPortal.setState(Portal.State.OPEN);
-        westPortal.setDestination("icmaze/Spawn", new DiscreteCoordinates(8, 4));
-
-        Portal eastPortal = portals.get(AreaPortals.E);
-        eastPortal.setState(Portal.State.LOCKED);
-        eastPortal.setKeyId(KEY_ID);
-        eastPortal.setDestination("icmaze/MediumArea", new DiscreteCoordinates( 1, 8));
+        registerPortal(AreaPortals.W, "icmaze/Spawn", new DiscreteCoordinates(8, 4), Portal.State.OPEN, Portal.NO_KEY_ID);
+        registerPortal(AreaPortals.E, "icmaze/MediumArea", new DiscreteCoordinates(1, 8), Portal.State.LOCKED, KEY_ID);
 
         for (Portal p : portals.values()) registerActor(p);
 

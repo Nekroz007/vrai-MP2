@@ -11,11 +11,13 @@ import ch.epfl.cs107.play.window.Canvas;
 public class Key extends ICMazeCollectable{
     private final Sprite sprite;
     private final int keyId;
+
     public Key(Area area, Orientation orientation, DiscreteCoordinates position,int keyId){
         super(area, orientation, position);
         this.keyId = keyId;
         this.sprite = new Sprite("icmaze/key", 0.75f,0.75f, this);
     }
+
     public int getKeyId(){
         return keyId;
     }
