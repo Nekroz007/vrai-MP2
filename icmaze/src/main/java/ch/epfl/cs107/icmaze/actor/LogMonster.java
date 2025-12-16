@@ -200,7 +200,7 @@ public class LogMonster extends PathFinderEnemy {
     private class LogMonsterInteractionHandler implements ICMazeInteractionVisitor {
         @Override
         public void interactWith(ICMazePlayer player, boolean isCellInteraction) {
-            if (isSleeping()) return;
+            if (isSleeping() || isDead()) return;
             if (isCellInteraction) {
                 player.decreaseHealth(DAMAGE);
             }

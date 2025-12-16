@@ -15,14 +15,11 @@ public class ICMaze extends AreaGame {
     private ICMazePlayer player;
     private int areaIndex;
 
-    /*
     @Override
     public int getFrameRate() {
         return 60;
     }
 
-
-     */
     private void generateHardCodedLevel() {
         addArea(new Spawn());
         addArea(new BossArea());

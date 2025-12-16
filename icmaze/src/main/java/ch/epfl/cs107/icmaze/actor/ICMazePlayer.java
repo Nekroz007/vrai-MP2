@@ -100,6 +100,15 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     }
 
     @Override
+    protected void decreaseHealth(int amount) {
+        if (immunityTimer > 0) {
+            return;
+        }
+        super.decreaseHealth(amount);
+        immunityTimer = 3f;
+    }
+
+    @Override
     public void interactWith(Interactable other, boolean isCellInteraction) {
         other.acceptInteraction(handler, isCellInteraction);
     }
@@ -142,8 +151,7 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
 
     @Override
     public void draw(Canvas canvas) {
-        if (Math.ceil(immunityTimer) - immunityTimer > 0.5f) {
-            return;
+        if (immunityTimer > 0 && (int)(immunityTimer * 10) % 2 == 0) {
         }
         switch (state) {
             case ATTACKING_WITH_PICKAXE:
@@ -204,7 +212,7 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
                 }
             }
             else if (state == State.ATTACKING_WITH_PICKAXE) {
-                logMonster.loseHp(1);
+                logMonster.decreaseHealth(1);
             }
         }
     }
