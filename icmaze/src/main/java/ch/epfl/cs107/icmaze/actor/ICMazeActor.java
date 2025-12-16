@@ -71,6 +71,7 @@ public abstract class ICMazeActor extends MovableAreaEntity{
         health.increase(amount);
     }
 
+
     public void resetHealth() {
         health.resetHealth();
     }

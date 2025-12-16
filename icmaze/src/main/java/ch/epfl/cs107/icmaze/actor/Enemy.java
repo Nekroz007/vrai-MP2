@@ -10,67 +10,80 @@ import ch.epfl.cs107.play.math.Vector;
 import ch.epfl.cs107.play.window.Canvas;
 
 public abstract class Enemy extends ICMazeActor implements Interactor, Interactable {
+
     private int hp;
     private boolean dead;
-    private static int MAX_HEALTH = 10; // TODO: look for correct health value
-    private static final int ANIMATION_DURATION = 24;
     private Animation vanishAnimation;
+    private static final int ANIMATION_DURATION = 24;
 
-    protected Enemy (Area area, Orientation orientation, DiscreteCoordinates position, int hp) {
-        super(area, orientation, position, MAX_HEALTH, false);
-        this.hp = hp;
+    protected Enemy(Area area, Orientation orientation, DiscreteCoordinates position, int maxHp) {
+        super(area, orientation, position, maxHp, false);
+        this.hp = maxHp;
         this.dead = false;
     }
+
     public int getHp() {
         return hp;
     }
-    public void loseHp(int amount){
-        if (dead){
-            return;
-        }
-        hp -= amount;
-        if (hp <= 0){
-            die();
+
+    /**
+     * Méthode pour infliger des dégâts à l'ennemi.
+     * Appelle die() si PV <= 0.
+     */
+    public void loseHp(int amount) {
+        if (!dead) {
+            hp -= amount;
+            if (hp <= 0) {
+                hp = 0;
+                die();
+            }
         }
     }
-    public boolean isDead(){
+
+    public boolean isDead() {
         return dead;
     }
-    public abstract int getMaxHp();
-    protected void die (){
-        dead = true;
-        vanishAnimation = new Animation("icmaze/vanish", 7, 2, 2, this , 32, 32, new
-                Vector(-0.5f, 0f), ANIMATION_DURATION/7, false);
+
+    protected void die() {
+        if (!dead) {
+            dead = true;
+            vanishAnimation = new Animation("icmaze/vanish", 7, 2, 2, this, 32, 32,
+                    new Vector(-0.5f, 0f), ANIMATION_DURATION / 7, false);
+        }
     }
+
     @Override
-    public boolean wantsCellInteraction() {
-        return true;
+    public boolean takeCellSpace() {
+        return !dead;
     }
-    @Override
-    public boolean wantsViewInteraction() {
-        return true;
-    }
-    @Override
-    public boolean takeCellSpace(){
-        return !isDead();
-    }
+
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        if (dead && vanishAnimation != null){
+        if (dead && vanishAnimation != null) {
             vanishAnimation.update(deltaTime);
-            if (vanishAnimation.isCompleted()){
+            if (vanishAnimation.isCompleted()) {
                 getOwnerArea().unregisterActor(this);
             }
         }
-
     }
+
     @Override
-    public void draw(Canvas canvas){
-        if (dead && vanishAnimation != null){
+    public void draw(Canvas canvas) {
+        if (dead && vanishAnimation != null) {
             vanishAnimation.draw(canvas);
-        } else {
+        } else if (!dead) {
             super.draw(canvas);
         }
+    }
+
+    @Override
+    public boolean wantsCellInteraction() {
+        return !dead;
+    }
+
+    @Override
+    public boolean wantsViewInteraction() {
+        return !dead;
     }
 }

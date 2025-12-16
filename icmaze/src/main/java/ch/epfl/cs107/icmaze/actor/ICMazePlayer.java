@@ -105,6 +105,9 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     }
 
     @Override
+    public boolean isViewInteractable() { return true; }
+
+    @Override
     public boolean takeCellSpace() { return true; }
 
     public Portal getCurrentPortal() { return currentPortal; }
@@ -139,10 +142,8 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
 
     @Override
     public void draw(Canvas canvas) {
-        // C'est ICI que l'animation est choisie
         if (Math.ceil(immunityTimer) - immunityTimer > 0.5f) {
-            return; // we only draw every 0.5 seconds.
-            // TODO: move this up to ICMazeActor since also used by Enemy
+            return;
         }
         switch (state) {
             case ATTACKING_WITH_PICKAXE:
@@ -195,11 +196,15 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
                 rock.takeDamage(1);
             }
         }
-        public void interactWith (LogMonster logMonster, boolean isCellInteraction) {
+        public void interactWith(LogMonster logMonster, boolean isCellInteraction) {
             if (isCellInteraction) {
-                decreaseHealth(1); // TODO: remove magic number, replace by static attribute of the monster
-                immunityTimer = 3f; // TODO: again, remove magic number
-
+                if (!logMonster.isSleeping()) {
+                    decreaseHealth(logMonster.getDamage());
+                    immunityTimer = 3f;
+                }
+            }
+            else if (state == State.ATTACKING_WITH_PICKAXE) {
+                logMonster.loseHp(1);
             }
         }
     }
