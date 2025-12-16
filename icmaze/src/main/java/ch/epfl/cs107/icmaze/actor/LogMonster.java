@@ -124,7 +124,7 @@ public class LogMonster extends PathFinderEnemy implements Interactor, Interacta
                 }
                 if (stateCooldown.ready(deltaTime) && target != null){
                     if (Math.random() < getTransitionProbability()){
-                        state = state.CHASING;
+                        state = State.CHASING;
                     }
                 }
                 randomAnimation.update(deltaTime);
