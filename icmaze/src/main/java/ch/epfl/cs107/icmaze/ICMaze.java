@@ -2,6 +2,7 @@ package ch.epfl.cs107.icmaze;
 
 import ch.epfl.cs107.icmaze.actor.ICMazePlayer;
 import ch.epfl.cs107.icmaze.area.ICMazeArea;
+import ch.epfl.cs107.icmaze.area.LevelGenerator;
 import ch.epfl.cs107.icmaze.area.maps.*;
 import ch.epfl.cs107.play.areagame.AreaGame;
 import ch.epfl.cs107.play.io.FileSystem;
@@ -23,8 +24,19 @@ public class ICMaze extends AreaGame {
         addArea(new LargeArea());
     }
 
-    protected void createAreas(){
-        generateHardCodedLevel();
+    @Override
+    protected void createAreas() {
+        // Génération procédurale (Etape 4.3)
+        // On génère 3 salles intermédiaires par exemple (paramètre length)
+        ICMazeArea[] generatedAreas = LevelGenerator.generateLine(this, 3);
+
+        // Enregistrement de toutes les aires générées
+        for (ICMazeArea area : generatedAreas) {
+            addArea(area);
+        }
+
+        // Ancienne méthode (commentée comme demandé pour pouvoir revenir en arrière)
+        // generateHardCodedLevel();
     }
 
     @Override

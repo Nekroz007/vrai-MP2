@@ -20,7 +20,7 @@ public abstract class ICMazeActor extends MovableAreaEntity{
 
     public ICMazeActor(Area owner, Orientation orientation, DiscreteCoordinates coordinates, int maxHealth, boolean friendly) {
         super(owner, orientation, coordinates);
-        health = new Health(this, Transform.I.translated(0, 1.75f), maxHealth, true);
+        health = new Health(this, Transform.I.translated(0, 1.75f), maxHealth, friendly);
     }
 
     @Override
@@ -58,13 +58,15 @@ public abstract class ICMazeActor extends MovableAreaEntity{
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        if (immunityTimer > 0) health.draw(canvas);
+        health.draw(canvas);
     }
 
-    // TODO: what if some entity removes more than MaxHp ? although this shouldn't be possible
-    // TODO: need to think of a defensive way of handling this
     protected void decreaseHealth(int amount) {
+        if (immunityTimer > 0) {
+            return;
+        }
         health.decrease(amount);
+        immunityTimer = MAX_IMMUNITY;
     }
 
     protected void increaseHealth(int amount) {
@@ -73,6 +75,7 @@ public abstract class ICMazeActor extends MovableAreaEntity{
 
     public void resetHealth() {
         health.resetHealth();
+        immunityTimer = 0; // Reset aussi l'immunité
     }
 
     public boolean isDead() {

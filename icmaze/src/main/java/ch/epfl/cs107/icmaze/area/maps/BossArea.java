@@ -5,11 +5,16 @@ import ch.epfl.cs107.icmaze.area.ICMazeArea;
 import ch.epfl.cs107.play.engine.actor.Background;
 import ch.epfl.cs107.play.engine.actor.Foreground;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
+import ch.epfl.cs107.play.math.Orientation;
 
 public class BossArea extends ICMazeArea {
 
+    private final Orientation entry;
 
-    public BossArea() { super("SmallArea", 8, Portal.NO_KEY_ID); }
+    public BossArea(Orientation entry, int keyId) {
+        super("SmallArea", 8, keyId); // Utilise le background "SmallArea"
+        this.entry = entry;
+    }
 
     @Override
     public DiscreteCoordinates getPlayerSpawnPosition() { return new DiscreteCoordinates(size, size / 2 + 1); }

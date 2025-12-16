@@ -15,11 +15,15 @@ import java.util.List;
 
 public class SmallArea extends ICMazeArea {
     private static final int KEY_ID = 1;
-    private int difficulty;
+    private final int difficulty;
+    private final Orientation entry;
+    private final Orientation exit;
 
-    public SmallArea() {
-        super("SmallArea", 8, KEY_ID);
-        this.difficulty = Difficulty.HARDEST;
+    public SmallArea(Orientation entry, Orientation exit, int keyId, int difficulty) {
+        super("SmallArea", 8, keyId);
+        this.entry = entry;
+        this.exit = exit;
+        this.difficulty = difficulty;
     }
 
     @Override

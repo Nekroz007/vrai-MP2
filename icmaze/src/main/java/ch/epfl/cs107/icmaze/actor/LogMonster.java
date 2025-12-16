@@ -7,6 +7,7 @@ import ch.epfl.cs107.icmaze.area.ICMazeArea;
 import ch.epfl.cs107.icmaze.handler.ICMazeInteractionVisitor;
 import ch.epfl.cs107.play.areagame.actor.Interactable;
 import ch.epfl.cs107.play.areagame.area.Area;
+import ch.epfl.cs107.play.areagame.handler.AreaInteractionVisitor;
 import ch.epfl.cs107.play.engine.actor.OrientedAnimation;
 import ch.epfl.cs107.play.engine.actor.Path;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
@@ -145,15 +146,23 @@ public class LogMonster extends PathFinderEnemy {
             return;
         }
 
+        // Dessin du chemin (toujours affiché pour le debug ou selon choix)
         if (graphicPath != null && state == State.CHASING) {
             graphicPath.draw(canvas);
         }
 
-        switch (state) {
-            case SLEEPING -> sleepingAnimation.draw(canvas);
-            case RANDOM -> randomAnimation.draw(canvas);
-            case CHASING -> chasingAnimation.draw(canvas);
+        // Logique de clignotement
+        boolean blinking = immunityTimer > 0 && (int)(immunityTimer * 10) % 2 == 0;
+
+        if (!blinking) {
+            switch (state) {
+                case SLEEPING -> sleepingAnimation.draw(canvas);
+                case RANDOM -> randomAnimation.draw(canvas);
+                case CHASING -> chasingAnimation.draw(canvas);
+            }
         }
+
+        super.draw(canvas);
     }
 
     @Override
@@ -192,6 +201,16 @@ public class LogMonster extends PathFinderEnemy {
     @Override
     public void interactWith(Interactable other, boolean isCellInteraction) {
         other.acceptInteraction(handler, isCellInteraction);
+    }
+
+    @Override
+    public void acceptInteraction(AreaInteractionVisitor v, boolean isCellInteraction) {
+        ((ICMazeInteractionVisitor) v).interactWith(this, isCellInteraction);
+    }
+
+    @Override
+    public boolean isViewInteractable() {
+        return true;
     }
 
     /**

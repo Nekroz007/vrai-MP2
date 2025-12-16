@@ -16,12 +16,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class MediumArea extends ICMazeArea {
-    private final int difficulty;
     public static final int KEY_ID = 2;
+    private final int difficulty;
+    private final Orientation entry;
+    private final Orientation exit;
 
-    public MediumArea() {
-        super("MediumArea", 16, KEY_ID);
-        this.difficulty = Difficulty.HARDEST;
+    public MediumArea(Orientation entry, Orientation exit, int keyId, int difficulty) {
+        super("MediumArea", 16, keyId);
+        this.entry = entry;
+        this.exit = exit;
+        this.difficulty = difficulty;
     }
 
     @Override

@@ -100,15 +100,6 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     }
 
     @Override
-    protected void decreaseHealth(int amount) {
-        if (immunityTimer > 0) {
-            return;
-        }
-        super.decreaseHealth(amount);
-        immunityTimer = 3f;
-    }
-
-    @Override
     public void interactWith(Interactable other, boolean isCellInteraction) {
         other.acceptInteraction(handler, isCellInteraction);
     }
@@ -151,16 +142,15 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
 
     @Override
     public void draw(Canvas canvas) {
-        if (immunityTimer > 0 && (int)(immunityTimer * 10) % 2 == 0) {
+        boolean blinking = immunityTimer > 0 && (int)(immunityTimer * 10) % 2 == 0;
+
+        if (!blinking) {
+            switch (state) {
+                case ATTACKING_WITH_PICKAXE -> pickaxeAnimation.draw(canvas);
+                case null, default -> animation.draw(canvas);
+            }
         }
-        switch (state) {
-            case ATTACKING_WITH_PICKAXE:
-                pickaxeAnimation.draw(canvas);
-                break;
-            case null, default:
-                animation.draw(canvas);
-                break;
-        }
+        super.draw(canvas);
     }
 
 
