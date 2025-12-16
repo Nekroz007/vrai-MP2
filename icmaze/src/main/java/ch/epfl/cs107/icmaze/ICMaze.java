@@ -63,6 +63,11 @@ public class ICMaze extends AreaGame {
     public void end() {}
 
     @Override
+    public int getFrameRate() {
+        return 60;
+    }
+
+    @Override
     public String getTitle() {
         return "ICMaze";
     }
