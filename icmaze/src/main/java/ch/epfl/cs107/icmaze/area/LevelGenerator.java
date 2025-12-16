@@ -16,7 +16,7 @@ public class LevelGenerator {
         List<ICMazeArea> levels = new ArrayList<>();
         Map<DiscreteCoordinates, ICMazeArea> map = new HashMap<>();
 
-        // 1. SPAWN (Clé MAX_VALUE par défaut)
+        // spawn
         DiscreteCoordinates currentPos = new DiscreteCoordinates(0, 0);
         Spawn spawn = new Spawn();
         levels.add(spawn);
@@ -26,7 +26,7 @@ public class LevelGenerator {
 
         List<Orientation> dirs = Arrays.asList(Orientation.UP, Orientation.RIGHT, Orientation.DOWN);
 
-        // 2. SALLES INTERMÉDIAIRES
+        // salle de labyrinthe
         for (int i = 0; i < length; ++i) {
             double progress = (double) (i + 1) / length;
             int difficulty;
@@ -38,7 +38,7 @@ public class LevelGenerator {
                 default: difficulty = Difficulty.HARDEST; break;
             }
 
-            int keyId = RandomGenerator.rng.nextInt(10000) + 1; // ID Clé aléatoire [cite: 638-650]
+            int keyId = RandomGenerator.rng.nextInt(10000) + 1;
             ICMazeArea newArea;
             double r = RandomGenerator.rng.nextDouble();
 
@@ -46,7 +46,6 @@ public class LevelGenerator {
             else if (r < progress) newArea = new MediumArea(difficulty, keyId);
             else newArea = new SmallArea(difficulty, keyId);
 
-            // Choix direction
             Collections.shuffle(dirs, RandomGenerator.rng);
             DiscreteCoordinates nextPos = null;
             Orientation usedDir = null;
@@ -61,16 +60,14 @@ public class LevelGenerator {
             }
             if (nextPos == null) break;
 
-            // CONNEXION
             connect(prevArea, newArea, usedDir);
-
             levels.add(newArea);
             map.put(nextPos, newArea);
             prevArea = newArea;
             currentPos = nextPos;
         }
 
-        // 3. BOSS (Length 0 -> Spawn connecte directement à Boss)
+        // boss
         BossArea boss = new BossArea();
         Collections.shuffle(dirs, RandomGenerator.rng);
         for (Orientation d : dirs) {
@@ -98,47 +95,35 @@ public class LevelGenerator {
         DiscreteCoordinates arrivalInFrom;
 
         switch (dir) {
-            case UP: // Sortie NORD
+            case UP:
                 outPortal = ICMazeArea.AreaPortals.N;
                 inPortal = ICMazeArea.AreaPortals.S;
 
-                // Arrivée : Juste au-dessus du mur du bas (y=1)
                 arrivalInTo = new DiscreteCoordinates(toSize / 2, 1);
-
-                // Retour : Juste en-dessous du mur du haut (y=size-2)
-                arrivalInFrom = new DiscreteCoordinates(fromSize / 2, fromSize - 2);
+                arrivalInFrom = new DiscreteCoordinates(fromSize / 2, fromSize - 1);
                 break;
 
-            case RIGHT: // Sortie EST
+            case RIGHT:
                 outPortal = ICMazeArea.AreaPortals.E;
                 inPortal = ICMazeArea.AreaPortals.W;
 
-                // Arrivée : Juste à droite du mur de gauche (x=1)
                 arrivalInTo = new DiscreteCoordinates(1, toSize / 2);
-
-                // Retour : Juste à gauche du mur de droite (x=size-2)
-                arrivalInFrom = new DiscreteCoordinates(fromSize - 2, fromSize / 2);
+                arrivalInFrom = new DiscreteCoordinates(fromSize - 1, fromSize / 2);
                 break;
 
-            case DOWN: // Sortie SUD
+            case DOWN:
                 outPortal = ICMazeArea.AreaPortals.S;
                 inPortal = ICMazeArea.AreaPortals.N;
 
-                // Arrivée : Juste en-dessous du mur du haut (y=size-2)
-                arrivalInTo = new DiscreteCoordinates(toSize / 2, toSize - 2);
-
-                // Retour : Juste au-dessus du mur du bas (y=1)
+                arrivalInTo = new DiscreteCoordinates(toSize / 2, toSize - 1);
                 arrivalInFrom = new DiscreteCoordinates(fromSize / 2, 1);
                 break;
 
-            default: // Sortie OUEST
+            default:
                 outPortal = ICMazeArea.AreaPortals.W;
                 inPortal = ICMazeArea.AreaPortals.E;
 
-                // Arrivée : Juste à gauche du mur de droite (x=size-2)
-                arrivalInTo = new DiscreteCoordinates(toSize - 2, toSize / 2);
-
-                // Retour : Juste à droite du mur de gauche (x=1)
+                arrivalInTo = new DiscreteCoordinates(toSize - 1, toSize / 2);
                 arrivalInFrom = new DiscreteCoordinates(1, fromSize / 2);
                 break;
         }
