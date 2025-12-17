@@ -24,7 +24,7 @@ public class ICMaze extends AreaGame implements DialogHandler {
     }
 
     protected void createAreas() {
-        int labyrinthCount = 0;
+        int labyrinthCount = 2;
 
         ICMazeArea[] levels = LevelGenerator.generateLine(this, labyrinthCount);
 

@@ -191,6 +191,7 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
             if (isCellInteractable) {
                 heart.collect();
                 increaseHealth(heart.HEALING_HP);
+                immunityTimer = 1.0f;
             }
 
         }
@@ -199,6 +200,7 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
             if (isCellInteraction) {
                 collectKey(key.getKeyId());
                 key.collect();
+                immunityTimer = 1.0f;
             }
         }
 

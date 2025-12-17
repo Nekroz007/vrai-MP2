@@ -18,9 +18,9 @@ import java.util.List;
 
 public class Boss extends Enemy implements Interactable {
 
-    private static final int MAX_HEALTH = 5;
+    private static final int MAX_HEALTH = 3;
     private static final int ANIMATION_DURATION = 12;
-    private static final int SHOOTING_INTERVAL = 50; // Vitesse de tir
+    private static final int SHOOTING_INTERVAL = 60; // Vitesse de tir
 
     private final OrientedAnimation animation;
     private boolean isActive;
@@ -58,6 +58,8 @@ public class Boss extends Enemy implements Interactable {
     public void draw(Canvas canvas) {
         if (!isDead()) {
             animation.draw(canvas);
+            super.draw(canvas);
+        } else {
             super.draw(canvas);
         }
     }
@@ -105,12 +107,18 @@ public class Boss extends Enemy implements Interactable {
     }
 
     public void receiveAttack() {
+        if (isDead()) return; // Sécurité supplémentaire
+
         if (!isActive) {
             isActive = true;
+            teleport(); // On se téléporte quand on se réveille
         } else {
             decreaseHealth(1);
+            // CORRECTION : On ne se téléporte que si on est encore vivant
+            if (!isDead()) {
+                teleport();
+            }
         }
-        teleport();
     }
 
     private void teleport() {

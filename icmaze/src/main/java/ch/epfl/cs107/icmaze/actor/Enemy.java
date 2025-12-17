@@ -58,6 +58,7 @@ public abstract class Enemy extends ICMazeActor implements Interactor, Interacta
 
     @Override
     public boolean wantsCellInteraction() { return !dead; }
+
     @Override
     public boolean wantsViewInteraction() { return !dead; }
 }

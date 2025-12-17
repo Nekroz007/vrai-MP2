@@ -11,43 +11,51 @@ import ch.epfl.cs107.play.engine.actor.Animation;
 import ch.epfl.cs107.play.engine.actor.Sprite;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
+import ch.epfl.cs107.play.math.Transform;
 import ch.epfl.cs107.play.math.Vector;
 import ch.epfl.cs107.play.window.Canvas;
 
 import java.util.Collections;
 import java.util.List;
 
-// TODO: Why this isn't an actor ?
 public class Rock extends AreaEntity {
-        private final Sprite sprite;
-        private int hp;
-        private Animation deathAnimation;
-        private boolean isDying = false;
-        private final Cooldown damageCooldown;
-        private boolean isInvulnerable = false;
+    private final Sprite sprite;
+    private Animation deathAnimation;
+    private final Cooldown damageCooldown;
+    private Health healthBar;
 
-        public Rock(Area area, Orientation orientation, DiscreteCoordinates position) {
-            super(area, orientation, position);
-            this.sprite = new Sprite("rock.2", 1, 1, this);
-            this.hp = 3;
-            this.damageCooldown = new Cooldown(0.5f);
-        }
+    private boolean isDying = false;
+    private boolean isInvulnerable = false;
 
-        /**
+    private int hp;
+    private static final int MAX_HP = 3;
+
+    public Rock(Area area, Orientation orientation, DiscreteCoordinates position) {
+        super(area, orientation, position);
+        this.healthBar = new Health(this, Transform.I.translated(0, 1.1f), MAX_HP, true);
+        this.sprite = new Sprite("rock.2", 1, 1, this);
+        this.hp = MAX_HP;
+        this.damageCooldown = new Cooldown(0.5f);
+
+
+    }
+
+    /**
          * Applique des dommages au rocher
          *
          * @param damage Quantité de dégâts
          */
-        public void takeDamage(int damage) {
-            if (!isDying && !isInvulnerable) {
-                hp -= damage;
-                isInvulnerable = true;
-                damageCooldown.reset();
+    public void takeDamage(int damage) {
+        if (!isDying && !isInvulnerable) {
+            hp -= damage;
+            healthBar.decrease(damage);
+            isInvulnerable = true;
+            damageCooldown.reset();
 
-                if (hp <= 0) {
-                    isDying = true;
-                    this.deathAnimation = new Animation("icmaze/vanish", 7, 2, 2, this,32
-                            , 32, new Vector(-0.5f, 0.0f), 24/7, false);
+            if (hp <= 0) {
+                isDying = true;
+                this.deathAnimation = new Animation("icmaze/vanish", 7, 2, 2, this,32
+                        , 32, new Vector(-0.5f, 0.0f), 24/7, false);
                 }
             }
         }
@@ -73,14 +81,22 @@ public class Rock extends AreaEntity {
             }
         }
 
-        @Override
-        public void draw(Canvas canvas) {
-            if (isDying) {
-                deathAnimation.draw(canvas);
-            } else {
-                sprite.draw(canvas);
+    @Override
+    public void draw(Canvas canvas) {
+        if (isDying) {
+            deathAnimation.draw(canvas);
+        } else {
+            // APPLICATION DU CONSEIL : "Change l'ordre de dessin"
+            // Selon le conseil : dessiner APRES met l'objet EN DESSOUS.
+            // Donc on dessine la HealthBar en PREMIER (pour qu'elle soit au-dessus).
+            // Et on dessine le Sprite en SECOND (pour qu'il soit en dessous).
+
+            if (hp < MAX_HP) {
+                healthBar.draw(canvas);
             }
+            sprite.draw(canvas);
         }
+    }
 
         @Override
         public boolean takeCellSpace(){
