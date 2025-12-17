@@ -18,7 +18,7 @@ import java.util.List;
 
 public class Boss extends Enemy implements Interactable {
 
-    private static final int MAX_HEALTH = 3;
+    private static final int MAX_HEALTH = 5;
     private static final int ANIMATION_DURATION = 12;
     private static final int SHOOTING_INTERVAL = 50; // Vitesse de tir
 
@@ -29,7 +29,7 @@ public class Boss extends Enemy implements Interactable {
 
     public Boss(Area area, Orientation orientation, DiscreteCoordinates position) {
         super(area, orientation, position, MAX_HEALTH);
-        this.isActive = false; // 2. Immobile au début
+        this.isActive = false;
         this.shootingTimer = SHOOTING_INTERVAL;
         this.handler = new BossInteractionHandler();
 
@@ -45,8 +45,6 @@ public class Boss extends Enemy implements Interactable {
         if (isDead()) return;
 
         animation.update(deltaTime);
-
-        // 4. Une fois activé, tire régulièrement
         if (isActive) {
             shootingTimer--;
             if (shootingTimer <= 0) {
@@ -60,11 +58,10 @@ public class Boss extends Enemy implements Interactable {
     public void draw(Canvas canvas) {
         if (!isDead()) {
             animation.draw(canvas);
-            super.draw(canvas); // Affiche la barre de vie
+            super.draw(canvas);
         }
     }
 
-    // 5. Barrage de projectiles avec un trou
     private void shoot() {
         int width = getOwnerArea().getWidth();
         int height = getOwnerArea().getHeight();
@@ -78,11 +75,7 @@ public class Boss extends Enemy implements Interactable {
             range = height;
         }
 
-        // IMPORTANT : On exclut les murs (index 0 et range-1) pour le trou de sécurité aussi
-        // On choisit un trou entre 1 et range-2
         int safetyGap = 1 + ch.epfl.cs107.play.math.random.RandomGenerator.getInstance().nextInt(range - 2);
-
-        // CORRECTION MAJEURE : Boucle de 1 à range-1 (exclus) pour ne pas tirer dans les murs
         for (int i = 1; i < range - 1; i++) {
             if (i == safetyGap) continue;
 
@@ -98,15 +91,12 @@ public class Boss extends Enemy implements Interactable {
                 projPos = new DiscreteCoordinates(currentPos.x - 1, i);
             }
 
-            // Vérification stricte des limites
             if (projPos != null &&
                     projPos.x > 0 && projPos.x < width - 1 &&
                     projPos.y > 0 && projPos.y < height - 1) {
 
-                // On crée et enregistre le projectile uniquement si la position est valide
                 FireProjectile projectile = new FireProjectile(getOwnerArea(), bossOri, projPos);
 
-                // Double sécurité : on vérifie si le projectile peut entrer (optionnel mais recommandé)
                 if (getOwnerArea().canEnterAreaCells(projectile, java.util.Collections.singletonList(projPos))) {
                     getOwnerArea().registerActor(projectile);
                 }
@@ -114,12 +104,11 @@ public class Boss extends Enemy implements Interactable {
         }
     }
 
-    // 3. Activation et Téléportation
     public void receiveAttack() {
         if (!isActive) {
-            isActive = true; // S'active à la première attaque
+            isActive = true;
         } else {
-            decreaseHealth(1); // Subit des dégâts ensuite
+            decreaseHealth(1);
         }
         teleport();
     }
@@ -129,7 +118,6 @@ public class Boss extends Enemy implements Interactable {
         int h = getOwnerArea().getHeight();
 
         List<DiscreteCoordinates> candidates = new ArrayList<>();
-        // Positions Figure 11 (milieux des murs)
         candidates.add(new DiscreteCoordinates(w / 2, 1));
         candidates.add(new DiscreteCoordinates(w / 2, h - 2));
         candidates.add(new DiscreteCoordinates(1, h / 2));
@@ -144,7 +132,6 @@ public class Boss extends Enemy implements Interactable {
                 resetMotion();
                 getOwnerArea().enterAreaCells(this, getCurrentCells());
 
-                // IMPORTANT : Regarder vers le centre pour tirer
                 lookAtCenter(w, h, coord);
                 break;
             }
@@ -161,7 +148,6 @@ public class Boss extends Enemy implements Interactable {
     @Override
     protected void die() {
         super.die();
-        // 8. Lâche la clé -1
         getOwnerArea().registerActor(new Key(getOwnerArea(), Orientation.DOWN, getCurrentMainCellCoordinates(), -1));
     }
 

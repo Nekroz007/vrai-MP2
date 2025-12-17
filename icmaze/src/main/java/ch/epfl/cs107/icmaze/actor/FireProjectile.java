@@ -11,7 +11,6 @@ import ch.epfl.cs107.play.window.Canvas;
 
 import java.util.List;
 
-//TODO: est ce que projectile est un ICMazeActor, ou un MovableAreaEntity ou un AreaEntity ?
 public class FireProjectile extends Projectile{
     private static final int DAMAGE = 1;
     private static final int ANIMATION_DURATION = 12;
@@ -63,10 +62,9 @@ public class FireProjectile extends Projectile{
     private class FireProjectileInteractionHandler implements ICMazeInteractionVisitor{
         @Override
         public void interactWith(ICMazePlayer player, boolean isCellInteraction) {
-            // Si le projectile touche le joueur (interaction de cellule)
             if (isCellInteraction) {
                 player.decreaseHealth(DAMAGE);
-                stop(); // Le projectile disparaît après l'impact
+                stop();
             }
         }
     }
