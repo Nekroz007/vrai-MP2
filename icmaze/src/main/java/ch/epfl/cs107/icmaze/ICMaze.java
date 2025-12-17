@@ -21,7 +21,7 @@ public class ICMaze extends AreaGame {
     }
 
     protected void createAreas() {
-        int labyrinthCount = 4;
+        int labyrinthCount = 0;
 
         ICMazeArea[] levels = LevelGenerator.generateLine(this, labyrinthCount);
 
@@ -68,6 +68,7 @@ public class ICMaze extends AreaGame {
     public int getFrameRate() {
         return 60;
     }
+
 
     @Override
     public String getTitle() {
