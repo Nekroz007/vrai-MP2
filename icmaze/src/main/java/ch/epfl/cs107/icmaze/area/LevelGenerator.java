@@ -13,12 +13,14 @@ import java.util.*;
 public class LevelGenerator {
 
     public static ICMazeArea[] generateLine(ICMaze game, int length) {
+        BossArea boss = new BossArea();
+        AreaLogic bossLogic = boss.getResolvedLogic();
         List<ICMazeArea> levels = new ArrayList<>();
         Map<DiscreteCoordinates, ICMazeArea> map = new HashMap<>();
 
         // spawn
         DiscreteCoordinates currentPos = new DiscreteCoordinates(0, 0);
-        Spawn spawn = new Spawn();
+        Spawn spawn = new Spawn(bossLogic);
         levels.add(spawn);
         map.put(currentPos, spawn);
 
@@ -42,9 +44,9 @@ public class LevelGenerator {
             ICMazeArea newArea;
             double r = RandomGenerator.rng.nextDouble();
 
-            if (r < progress * progress) newArea = new LargeArea(difficulty, keyId);
-            else if (r < progress) newArea = new MediumArea(difficulty, keyId);
-            else newArea = new SmallArea(difficulty, keyId);
+            if (r < progress * progress) newArea = new LargeArea(difficulty, keyId, bossLogic);
+            else if (r < progress) newArea = new MediumArea(difficulty, keyId, bossLogic);
+            else newArea = new SmallArea(difficulty, keyId, bossLogic);
 
             Collections.shuffle(dirs, RandomGenerator.rng);
             DiscreteCoordinates nextPos = null;

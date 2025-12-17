@@ -4,22 +4,27 @@ import ch.epfl.cs107.icmaze.Difficulty;
 import ch.epfl.cs107.icmaze.RandomGenerator;
 import ch.epfl.cs107.icmaze.actor.LogMonster;
 import ch.epfl.cs107.icmaze.actor.Portal;
+import ch.epfl.cs107.icmaze.area.AreaLogic;
 import ch.epfl.cs107.icmaze.area.ICMazeArea;
 import ch.epfl.cs107.play.engine.actor.Background;
 import ch.epfl.cs107.play.engine.actor.Foreground;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class SmallArea extends ICMazeArea {
 
     private int difficulty;
+    private final AreaLogic bossLogic;
+    private final List<LogMonster> monsters = new ArrayList<>();
 
-    public SmallArea(int difficulty, int keyId) {
+    public SmallArea(int difficulty, int keyId, AreaLogic bossLogic) {
         super("SmallArea", 8, keyId);
         this.difficulty = difficulty;
+        this.bossLogic = bossLogic;
         createPortals();
     }
 
@@ -40,8 +45,7 @@ public class SmallArea extends ICMazeArea {
 
         double diffRatio = Math.min(
                 1.0,
-                (double) Difficulty.HARDEST / difficulty
-        );
+                (double) Difficulty.HARDEST / difficulty);
 
         List<DiscreteCoordinates> coords = graph.keySet();
         Collections.shuffle(coords, RandomGenerator.rng);
@@ -67,11 +71,19 @@ public class SmallArea extends ICMazeArea {
                     state = LogMonster.State.CHASING;
                 }
 
-                registerActor(new LogMonster(this, Orientation.DOWN, pos, state));
+                LogMonster monster = new LogMonster(this, Orientation.DOWN, pos, state);
+                monster.setSleepLogic(bossLogic);
+                registerActor(monster);
+                monsters.add(monster);
+
 
                 enemyCount++;
             }
         }
+    }
+    @Override
+    protected boolean  isChallengeResolved(){
+        return bossLogic.isActive();
     }
 
     @Override

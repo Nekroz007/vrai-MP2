@@ -13,6 +13,7 @@ import ch.epfl.cs107.play.engine.actor.Path;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
 import ch.epfl.cs107.play.math.Vector;
+import ch.epfl.cs107.play.signal.logic.Logic;
 import ch.epfl.cs107.play.window.Canvas;
 
 import java.util.LinkedList;
@@ -48,6 +49,7 @@ public class LogMonster extends PathFinderEnemy {
     private final LogMonsterInteractionHandler handler = new LogMonsterInteractionHandler();
 
     private Path graphicPath;
+    private Logic sleepLogic;
 
     /**
      * Constructeur complet
@@ -82,11 +84,20 @@ public class LogMonster extends PathFinderEnemy {
     public boolean isSleeping() {
         return state == State.SLEEPING;
     }
+    public void setSleepLogic(Logic logic){
+        this.sleepLogic = logic;
+    }
 
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
         if (isDead()) return;
+
+        if (sleepLogic != null && sleepLogic.isOn()) {
+            state = State.SLEEPING;
+            sleepingAnimation.update(deltaTime);
+            return;
+        }
 
         switch (state) {
             case SLEEPING -> sleepingAnimation.update(deltaTime);

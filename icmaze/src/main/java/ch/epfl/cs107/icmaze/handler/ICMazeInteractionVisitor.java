@@ -1,6 +1,7 @@
 package ch.epfl.cs107.icmaze.handler;
 
 import ch.epfl.cs107.icmaze.actor.*;
+import ch.epfl.cs107.icmaze.actor.collectable.Diamond;
 import ch.epfl.cs107.icmaze.actor.collectable.Heart;
 import ch.epfl.cs107.icmaze.actor.collectable.Key;
 import ch.epfl.cs107.icmaze.actor.collectable.Pickaxe;
@@ -22,5 +23,5 @@ public interface ICMazeInteractionVisitor extends AreaInteractionVisitor {
     default void interactWith(LogMonster logMonster, boolean isCellInteraction) { ; }
     default void interactWith(FireProjectile fireProjectile, boolean isCellInteraction) { ; }
     default void interactWith(Boss boss, boolean isCellInteraction) { ; }
-
+    default void interactWith(Diamond diamond, boolean isCellInteraction) { ; }
 }
