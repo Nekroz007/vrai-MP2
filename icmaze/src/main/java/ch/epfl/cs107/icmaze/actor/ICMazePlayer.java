@@ -174,7 +174,6 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
         }
 
         public void interactWith(Heart heart, boolean isCellInteractable) {
-            // collect heart and add to health
             if (isCellInteractable) {
                 heart.collect();
                 increaseHealth(heart.HEALING_HP);
@@ -194,6 +193,7 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
                 rock.takeDamage(1);
             }
         }
+
         public void interactWith(LogMonster logMonster, boolean isCellInteraction) {
             if (isCellInteraction) {
                 if (!logMonster.isSleeping()) {
@@ -205,9 +205,21 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
                 logMonster.decreaseHealth(1);
             }
         }
+
         public void interactWith (FireProjectile fireProjectile, boolean isCellInteraction) {
             if (state == State.ATTACKING_WITH_PICKAXE && !isCellInteraction) {
                 //TODO: Compléter l'interaction entre le player et le fireprojectile
+            }
+        }
+
+        @Override
+        public void interactWith(Boss boss, boolean isCellInteraction) {
+            // Si c'est une interaction de vue (touche d'interaction/attaque pressée), on attaque le boss
+            if (!isCellInteraction) {
+                boss.receiveAttack();
+            } else {
+                // Optionnel : Si le joueur touche le boss (contact), il prend des dégâts
+                decreaseHealth(1);
             }
         }
     }

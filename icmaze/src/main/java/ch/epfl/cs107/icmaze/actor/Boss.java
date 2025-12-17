@@ -19,7 +19,7 @@ import java.util.List;
 public class Boss extends Enemy {
 
     private static final int MAX_HEALTH = 5;
-    private static final int ANIMATION_DURATION = 12; // Valeur adaptée selon ton snippetFromBack (PDF)
+    private static final int ANIMATION_DURATION = 12;
     private static final int SHOOTING_INTERVAL = 40;
 
     private final OrientedAnimation animation;
@@ -29,13 +29,13 @@ public class Boss extends Enemy {
 
     public Boss(Area area, Orientation orientation, DiscreteCoordinates position) {
         super(area, orientation, position, MAX_HEALTH);
-        this.isActive = false;
+        this.isActive = false; // Le boss commence immobile/inactif
         this.shootingTimer = SHOOTING_INTERVAL;
         this.handler = new BossInteractionHandler();
 
         Vector anchor = new Vector(-0.5f, 0);
         Orientation[] orders = {Orientation.DOWN, Orientation.RIGHT, Orientation.UP, Orientation.LEFT};
-        // 3 frames, 4 orientations, using ANIMATION_DURATION
+
         this.animation = new OrientedAnimation("icmaze/boss", ANIMATION_DURATION / 4,
                 this, anchor, orders, 3, 2, 2, 32, 32, true);
     }
@@ -47,6 +47,7 @@ public class Boss extends Enemy {
 
         animation.update(deltaTime);
 
+        // Ne tire que si le combat a commencé
         if (isActive) {
             shootingTimer--;
             if (shootingTimer <= 0) {
@@ -69,13 +70,14 @@ public class Boss extends Enemy {
         int width = getOwnerArea().getWidth();
         int height = getOwnerArea().getHeight();
 
+        // Détermine la portée (largeur ou hauteur selon l'orientation)
         if (getOrientation() == Orientation.UP || getOrientation() == Orientation.DOWN) {
             range = width;
         } else {
             range = height;
         }
 
-        // Utilisation du RandomGenerator correct
+        // On laisse une case "sûre" au hasard pour que le joueur puisse esquiver
         int safetyGap = RandomGenerator.getInstance().nextInt(range);
 
         for (int i = 0; i < range; i++) {
@@ -84,6 +86,7 @@ public class Boss extends Enemy {
             DiscreteCoordinates projPos = null;
             DiscreteCoordinates currentPos = getCurrentMainCellCoordinates();
 
+            // Calcule la position de départ du projectile (juste devant le boss)
             if (getOrientation() == Orientation.UP) {
                 projPos = new DiscreteCoordinates(i, currentPos.y + 1);
             } else if (getOrientation() == Orientation.DOWN) {
@@ -94,57 +97,69 @@ public class Boss extends Enemy {
                 projPos = new DiscreteCoordinates(currentPos.x - 1, i);
             }
 
-            // Vérification manuelle des bornes car Area.contains n'existe pas
-            if (projPos != null &&
-                    projPos.x >= 0 && projPos.x < width &&
-                    projPos.y >= 0 && projPos.y < height) {
-
+            // Vérification des bornes pour éviter de faire spawn hors map
+            if (projPos != null && projPos.x >= 0 && projPos.x < width && projPos.y >= 0 && projPos.y < height) {
+                // Création du projectile avec l'orientation du boss
                 FireProjectile projectile = new FireProjectile(getOwnerArea(), getOrientation(), projPos);
-                // On enregistre le projectile pour qu'il apparaisse
                 getOwnerArea().registerActor(projectile);
             }
         }
     }
 
+    // Gestion de l'attaque reçue (Activation ou Dégâts)
     public void receiveAttack() {
         if (!isActive) {
+            // Première attaque : activation seulement (pas de dégâts)
             isActive = true;
         } else {
+            // Attaques suivantes : dégâts
             decreaseHealth(1);
         }
+        // Dans tous les cas (réveil ou dégât), il se téléporte
         teleport();
     }
 
     private void teleport() {
-        int width = getOwnerArea().getWidth();
-        int height = getOwnerArea().getHeight();
+        int w = getOwnerArea().getWidth();
+        int h = getOwnerArea().getHeight();
 
         List<DiscreteCoordinates> candidates = new ArrayList<>();
-        // Ajout des positions candidates (milieux des murs)
-        candidates.add(new DiscreteCoordinates(width / 2, 1));
-        candidates.add(new DiscreteCoordinates(width / 2, height - 2));
-        candidates.add(new DiscreteCoordinates(1, height / 2));
-        candidates.add(new DiscreteCoordinates(width - 2, height / 2));
+        // Positions de la Figure 11 (milieux des murs intérieurs)
+        candidates.add(new DiscreteCoordinates(w / 2, 1));       // Sud
+        candidates.add(new DiscreteCoordinates(w / 2, h - 2));   // Nord
+        candidates.add(new DiscreteCoordinates(1, h / 2));       // Ouest
+        candidates.add(new DiscreteCoordinates(w - 2, h / 2));   // Est
 
         Collections.shuffle(candidates, RandomGenerator.getInstance());
 
         for (DiscreteCoordinates coord : candidates) {
+            // On évite de se téléporter sur sa position actuelle
             if (!coord.equals(getCurrentMainCellCoordinates())) {
-                // Gestion manuelle du déplacement car MovableAreaEntity gère mal le teleport instantané sans reset
-                getOwnerArea().leaveAreaCells(this, getCurrentCells()); // Utilisation de getCurrentCells()
+                getOwnerArea().leaveAreaCells(this, getCurrentCells());
                 setCurrentPosition(coord.toVector());
-                resetMotion(); // Important pour annuler tout mouvement en cours
+                resetMotion();
                 getOwnerArea().enterAreaCells(this, getCurrentCells());
+
+                // IMPORTANT : Le boss doit se tourner vers le centre pour tirer
+                lookAtCenter(w, h, coord);
                 break;
             }
         }
     }
 
+    private void lookAtCenter(int w, int h, DiscreteCoordinates pos) {
+        // Logique simple : si on est sur un bord, on regarde vers l'opposé
+        if (pos.x == 1) orientate(Orientation.RIGHT);
+        else if (pos.x >= w - 2) orientate(Orientation.LEFT);
+        else if (pos.y == 1) orientate(Orientation.UP);
+        else orientate(Orientation.DOWN);
+    }
+
     @Override
     protected void die() {
         super.die();
-        // Spawn de la clé finale à la mort (ID -1)
-        Key key = new Key(getOwnerArea(), getOrientation(), getCurrentMainCellCoordinates(), -1);
+        // Drop la clé finale (ID -1) pour sortir
+        Key key = new Key(getOwnerArea(), Orientation.DOWN, getCurrentMainCellCoordinates(), -1);
         getOwnerArea().registerActor(key);
     }
 
@@ -159,15 +174,10 @@ public class Boss extends Enemy {
         return Collections.emptyList();
     }
     @Override
-    public boolean wantsCellInteraction() {
-        return !isDead();
-    }
+    public boolean wantsCellInteraction() { return !isDead(); }
 
     @Override
-    public boolean wantsViewInteraction() {
-        // Enemy met ça à true, on le garde si besoin, ou false si le boss est passif à distance
-        return !isDead();
-    }
+    public boolean wantsViewInteraction() { return !isDead(); }
 
     @Override
     public void interactWith(Interactable other, boolean isCellInteraction) {
@@ -175,6 +185,12 @@ public class Boss extends Enemy {
     }
 
     private class BossInteractionHandler implements ICMazeInteractionVisitor {
-        // Ajouter ici les interactions spécifiques si le Boss doit réagir à quelque chose qu'il touche
+            @Override
+            public void interactWith(ICMazePlayer player, boolean isCellInteraction) {
+                // Si le Boss touche le joueur (contact), le joueur perd de la vie
+                if (isCellInteraction) {
+                    player.decreaseHealth(1);
+                }
+            }
     }
 }

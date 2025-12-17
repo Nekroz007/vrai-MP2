@@ -176,9 +176,22 @@ public abstract class ICMazeArea extends Area {
             }
         }
 
-        // placement de cle
         if (keyId != Portal.NO_KEY_ID) {
             List<DiscreteCoordinates> coords = new ArrayList<>(graph.keySet());
+
+            // CORRECTION : Retirer les zones de portails des apparitions possibles de clé
+            // On retire les cases juste devant les portails (là où le joueur arrive)
+            coords.remove(new DiscreteCoordinates(midX, 1));          // Sud
+            coords.remove(new DiscreteCoordinates(midX, getHeight() - 2));      // Nord
+            coords.remove(new DiscreteCoordinates(1, midY));          // Ouest
+            coords.remove(new DiscreteCoordinates(getWidth() - 2, midY));      // Est
+
+            // On peut aussi retirer les coordonnées exactes des portails (bords)
+            coords.remove(new DiscreteCoordinates(midX, 0));
+            coords.remove(new DiscreteCoordinates(midX, getHeight() - 1));
+            coords.remove(new DiscreteCoordinates(0, midY));
+            coords.remove(new DiscreteCoordinates(getWidth() - 1, midY));
+
             if (!coords.isEmpty()) {
                 Collections.shuffle(coords, RandomGenerator.rng);
                 registerActor(new Key(this, Orientation.DOWN, coords.get(0), keyId));

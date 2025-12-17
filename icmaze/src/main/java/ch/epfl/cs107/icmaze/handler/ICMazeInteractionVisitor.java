@@ -21,4 +21,6 @@ public interface ICMazeInteractionVisitor extends AreaInteractionVisitor {
     default void interactWith(Rock rock, boolean isCellInteraction) { ; }
     default void interactWith(LogMonster logMonster, boolean isCellInteraction) { ; }
     default void interactWith(FireProjectile fireProjectile, boolean isCellInteraction) { ; }
+    default void interactWith(Boss boss, boolean isCellInteraction) { ; }
+
 }

@@ -63,9 +63,10 @@ public class FireProjectile extends Projectile{
     private class FireProjectileInteractionHandler implements ICMazeInteractionVisitor{
         @Override
         public void interactWith(ICMazePlayer player, boolean isCellInteraction) {
+            // Si le projectile touche le joueur (interaction de cellule)
             if (isCellInteraction) {
                 player.decreaseHealth(DAMAGE);
-                stop();
+                stop(); // Le projectile disparaît après l'impact
             }
         }
 
