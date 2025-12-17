@@ -2,6 +2,7 @@ package ch.epfl.cs107.icmaze.area;
 
 import ch.epfl.cs107.icmaze.MazeGenerator;
 import ch.epfl.cs107.icmaze.RandomGenerator;
+import ch.epfl.cs107.icmaze.actor.LogMonster;
 import ch.epfl.cs107.icmaze.actor.Portal;
 import ch.epfl.cs107.icmaze.actor.Rock;
 import ch.epfl.cs107.icmaze.actor.collectable.Key;
@@ -24,6 +25,7 @@ public abstract class ICMazeArea extends Area {
     protected final AreaGraph graph = new AreaGraph();
     protected final AreaLogic logic = new AreaLogic();
     protected final Map<AreaPortals, Portal> portals = new HashMap<>();
+    protected final List<LogMonster> monsters = new ArrayList<>();
 
     protected Orientation entryOrientation = null;
     protected Orientation exitOrientation = null;
