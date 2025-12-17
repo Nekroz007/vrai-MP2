@@ -49,7 +49,6 @@ public class LogMonster extends PathFinderEnemy {
     private final LogMonsterInteractionHandler handler = new LogMonsterInteractionHandler();
 
     private Path graphicPath;
-    private Logic sleepLogic;
 
     /**
      * Constructeur complet
@@ -84,20 +83,20 @@ public class LogMonster extends PathFinderEnemy {
     public boolean isSleeping() {
         return state == State.SLEEPING;
     }
-    public void setSleepLogic(Logic logic){
-        this.sleepLogic = logic;
-    }
 
     @Override
     public void update(float deltaTime) {
-        super.update(deltaTime);
-        if (isDead()) return;
 
-        if (sleepLogic != null && sleepLogic.isOn()) {
-            state = State.SLEEPING;
-            sleepingAnimation.update(deltaTime);
-            return;
+        if (getOwnerArea() instanceof ICMazeArea area && area.isOn()) {
+            if (state != State.SLEEPING) {
+                state = State.SLEEPING;
+                target = null; // Oublier la cible
+            }
         }
+
+        super.update(deltaTime);
+
+        if (isDead()) return;
 
         switch (state) {
             case SLEEPING -> sleepingAnimation.update(deltaTime);

@@ -8,14 +8,16 @@ import ch.epfl.cs107.icmaze.actor.Rock;
 import ch.epfl.cs107.icmaze.actor.collectable.Key;
 import ch.epfl.cs107.play.areagame.AreaGraph;
 import ch.epfl.cs107.play.areagame.area.Area;
+import ch.epfl.cs107.play.engine.actor.Animation;
 import ch.epfl.cs107.play.io.FileSystem;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
+import ch.epfl.cs107.play.signal.logic.Logic;
 import ch.epfl.cs107.play.window.Window;
 
 import java.util.*;
 
-public abstract class ICMazeArea extends Area {
+public abstract class ICMazeArea extends Area implements Logic {
     private final String behaviorName;
     private static final float DYNAMIC_SCALE_MULTIPLIER = 1.375f;
     private static final float MAXIMUM_SCALE = 50f;
@@ -27,8 +29,12 @@ public abstract class ICMazeArea extends Area {
     protected final Map<AreaPortals, Portal> portals = new HashMap<>();
     protected final List<LogMonster> monsters = new ArrayList<>();
 
+    private Logic signal = Logic.FALSE; // Le signal dont dépend cette aire
+    private final List<Rock> rocks = new ArrayList<>();
+
     protected Orientation entryOrientation = null;
     protected Orientation exitOrientation = null;
+    private Animation vanishAnimation;
 
     protected ICMazeArea(String behaviorName, int size, int keyId) {
         super();
@@ -55,7 +61,29 @@ public abstract class ICMazeArea extends Area {
         return size;
     }
 
-    protected abstract boolean isChallengeResolved();
+    // 3. Méthode pour définir la dépendance (ex: BossArea)
+    public void setSignal(Logic signal) {
+        this.signal = signal;
+    }
+
+    @Override
+    public boolean isOn() {
+        return isChallengeResolved();
+    }
+
+    @Override
+    public boolean isOff() {
+        return !isOn();
+    }
+
+    @Override
+    public float getIntensity() {
+        return isOn() ? 1.0f : 0.0f;
+    }
+
+    protected boolean isChallengeResolved() {
+        return signal.isOn();
+    }
 
     public abstract DiscreteCoordinates getPlayerSpawnPosition();
 
@@ -125,9 +153,18 @@ public abstract class ICMazeArea extends Area {
     }
 
     @Override
-    public void update (float deltaTime) {
+    public void update(float deltaTime) {
         super.update(deltaTime);
         logic.setActive(isChallengeResolved());
+
+        // Si l'aire est résolue, on retire les rochers
+        if (isOn()) {
+            for (Rock rock : rocks) {
+                rock.vanish();
+
+            }
+            rocks.clear();
+        }
     }
 
     protected void generateMazeAndPlaceRocks(int difficulty) {
@@ -138,7 +175,6 @@ public abstract class ICMazeArea extends Area {
         int maxX = getWidth() - 1;
         int maxY = getHeight() - 1;
 
-        // --- CORRECTION 1 : REBOUCHER TOUS LES BORDS D'ABORD ---
         // on s'assure que les portails sont sur des murs
         // ouest
         maze[midY][0] = 1;      maze[midY][1] = 1;
@@ -176,7 +212,11 @@ public abstract class ICMazeArea extends Area {
             for (int x = 0; x < getWidth(); x++) {
                 if (maze[y][x] == 1) {
                     boolean isBorder = (x == 0 || x == maxX || y == 0 || y == maxY);
-                    if (!isBorder) registerActor(new Rock(this, Orientation.DOWN, new DiscreteCoordinates(x, y)));
+                    if (!isBorder) {
+                        Rock rock = new Rock(this, Orientation.DOWN, new DiscreteCoordinates(x, y));
+                        registerActor(rock);
+                        rocks.add(rock);
+                    }
                 } else {
                     boolean hasLeft = x > 0 && maze[y][x - 1] == 0;
                     boolean hasUp = y < maxY && maze[y + 1][x] == 0;
@@ -218,6 +258,8 @@ public abstract class ICMazeArea extends Area {
             portal.setKeyId(keyId);
         }
     }
+
+
 }
 
 

@@ -1,15 +1,11 @@
 package ch.epfl.cs107.icmaze.area.maps;
 
 import ch.epfl.cs107.icmaze.Difficulty;
-import ch.epfl.cs107.icmaze.MazeGenerator;
 import ch.epfl.cs107.icmaze.RandomGenerator;
 import ch.epfl.cs107.icmaze.actor.LogMonster;
 import ch.epfl.cs107.icmaze.actor.Portal;
-import ch.epfl.cs107.icmaze.actor.Rock;
-import ch.epfl.cs107.icmaze.area.AreaLogic;
 import ch.epfl.cs107.icmaze.area.ICMazeArea;
 import ch.epfl.cs107.play.engine.actor.Background;
-import ch.epfl.cs107.play.engine.actor.Foreground;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
 
@@ -19,13 +15,11 @@ import java.util.List;
 
 public class LargeArea extends ICMazeArea {
     private final int difficulty;
-    private final AreaLogic bossLogic;
     private final List<LogMonster> monsters = new ArrayList<>();
 
-    public LargeArea(int difficulty, int keyId, AreaLogic bossLogic) {
+    public LargeArea(int difficulty, int keyId) {
         super("LargeArea", 32, keyId);
         this.difficulty = difficulty;
-        this.bossLogic = bossLogic;
         createPortals();
     }
 
@@ -73,7 +67,6 @@ public class LargeArea extends ICMazeArea {
                 }
 
                 LogMonster monster = new LogMonster(this, Orientation.DOWN, pos, state);
-                monster.setSleepLogic(bossLogic);
                 registerActor(monster);
                 monsters.add(monster);
 
@@ -81,10 +74,6 @@ public class LargeArea extends ICMazeArea {
             }
         }
 
-    }
-    @Override
-    protected boolean isChallengeResolved(){
-        return bossLogic.isActive();
     }
 
     @Override

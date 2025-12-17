@@ -5,7 +5,6 @@ import ch.epfl.cs107.icmaze.actor.collectable.Diamond;
 import ch.epfl.cs107.icmaze.actor.collectable.Heart;
 import ch.epfl.cs107.icmaze.actor.collectable.Key;
 import ch.epfl.cs107.icmaze.actor.collectable.Pickaxe;
-import ch.epfl.cs107.icmaze.area.AreaLogic;
 import ch.epfl.cs107.icmaze.area.ICMazeArea;
 import ch.epfl.cs107.icmaze.handler.DialogHandler;
 import ch.epfl.cs107.play.engine.actor.Background;
@@ -15,16 +14,13 @@ import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
 
 public class Spawn extends ICMazeArea {
-    private final AreaLogic bossLogic;
-    private boolean treasureCreated = false;
-
+    private boolean treasureSpawned = false;
     private DialogHandler dialogHandler;
     private boolean welcomeShown = false;
 
 
-    public Spawn(AreaLogic bossLogic) {
+    public Spawn() {
         super("SmallArea", 8, Integer.MAX_VALUE);
-        this.bossLogic = bossLogic;
         createPortals();
     }
 
@@ -39,6 +35,10 @@ public class Spawn extends ICMazeArea {
             dialogHandler.publish(new Dialog("welcome"));
             welcomeShown = true;
         }
+        if (isChallengeResolved() && !treasureSpawned) {
+            registerActor(new Diamond(this, Orientation.DOWN, new DiscreteCoordinates(size/2, size/2)));
+            treasureSpawned = true;
+        }
     }
 
     @Override
@@ -49,17 +49,6 @@ public class Spawn extends ICMazeArea {
     @Override
     public String getTitle() {
         return "icmaze/Spawn";
-    }
-    @Override
-    public void update(float deltaTime) {
-        super.update(deltaTime);
-
-        // Crée le trésor si le boss est résolu et que le trésor n'existe pas encore
-        if (bossLogic.isOn() && !treasureCreated) {
-            treasureCreated = true;
-            // Exemple : création d’un diamant ou d’un trésor spécifique
-            registerActor(new Diamond(this, Orientation.UP, new DiscreteCoordinates(4, 4)));
-        }
     }
 
 

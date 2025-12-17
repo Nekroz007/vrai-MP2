@@ -24,9 +24,27 @@ public class ICMaze extends AreaGame implements DialogHandler {
     }
 
     protected void createAreas() {
-        int labyrinthCount = 2;
+        int labyrinthCount = 0;
 
         ICMazeArea[] levels = LevelGenerator.generateLine(this, labyrinthCount);
+
+        ICMazeArea bossArea = null;
+        for (ICMazeArea area : levels) {
+            if (area instanceof BossArea) {
+                bossArea = area;
+                break;
+            }
+        }
+
+        // Connexion des signaux
+        if (bossArea != null) {
+            for (ICMazeArea area : levels) {
+                // Spawn et les Labyrinthes (ceux qui ne sont pas BossArea) dépendent du Boss
+                if (area != bossArea) {
+                    area.setSignal(bossArea);
+                }
+            }
+        }
 
         for (ICMazeArea area : levels) {
             if (area instanceof Spawn) {

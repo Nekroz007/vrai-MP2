@@ -13,7 +13,7 @@ public class Diamond extends ICMazeCollectable{
 
     public Diamond(ICMazeArea area, Orientation orientation, DiscreteCoordinates position) {
         super(area, orientation, position);
-        this.sprite = new Sprite("icmaze/diamond", 0.75f, 0.75f, this);
+        this.sprite = new Sprite("Diamond", 2f, 2f, this);
     }
 
     @Override

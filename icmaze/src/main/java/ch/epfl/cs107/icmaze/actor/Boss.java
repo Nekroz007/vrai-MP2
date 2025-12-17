@@ -1,8 +1,6 @@
 package ch.epfl.cs107.icmaze.actor;
 
 import ch.epfl.cs107.icmaze.actor.collectable.Key;
-import ch.epfl.cs107.icmaze.actor.collectable.LogicKey;
-import ch.epfl.cs107.icmaze.area.AreaLogic;
 import ch.epfl.cs107.icmaze.handler.ICMazeInteractionVisitor;
 import ch.epfl.cs107.play.areagame.actor.Interactable;
 import ch.epfl.cs107.play.areagame.area.Area;
@@ -28,7 +26,6 @@ public class Boss extends Enemy implements Interactable {
     private boolean isActive;
     private int shootingTimer;
     private final BossInteractionHandler handler;
-    private final AreaLogic deadLogic = new AreaLogic();
 
     public Boss(Area area, Orientation orientation, DiscreteCoordinates position) {
         super(area, orientation, position, MAX_HEALTH);
@@ -159,13 +156,8 @@ public class Boss extends Enemy implements Interactable {
     @Override
     protected void die() {
         super.die();
-
-        deadLogic.setActive(true);
-
-        getOwnerArea().registerActor(new LogicKey(getOwnerArea(), Orientation.DOWN, getCurrentMainCellCoordinates(), -1));
+        getOwnerArea().registerActor(new Key(getOwnerArea(), Orientation.DOWN, getCurrentMainCellCoordinates(), -1));
     }
-
-
 
     @Override
     public boolean isViewInteractable() {
@@ -190,9 +182,6 @@ public class Boss extends Enemy implements Interactable {
     @Override
     public void interactWith(Interactable other, boolean isCellInteraction) {
         other.acceptInteraction(handler, isCellInteraction);
-    }
-    public AreaLogic getDeadLogic() {
-        return deadLogic;
     }
 
     private class BossInteractionHandler implements ICMazeInteractionVisitor {

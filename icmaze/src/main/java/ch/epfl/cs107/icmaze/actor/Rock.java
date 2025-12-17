@@ -60,6 +60,15 @@ public class Rock extends AreaEntity {
             }
         }
 
+    public void vanish() {
+        if (!isDying) {
+            isDying = true;
+            // On reprend exactement les paramètres de l'animation utilisés dans takeDamage
+            this.deathAnimation = new Animation("icmaze/vanish", 7, 2, 2, this, 32, 32,
+                    new Vector(-0.5f, 0.0f), 24/7, false);
+        }
+    }
+
         @Override
         public void update(float deltaTime) {
             super.update(deltaTime);
@@ -86,11 +95,6 @@ public class Rock extends AreaEntity {
         if (isDying) {
             deathAnimation.draw(canvas);
         } else {
-            // APPLICATION DU CONSEIL : "Change l'ordre de dessin"
-            // Selon le conseil : dessiner APRES met l'objet EN DESSOUS.
-            // Donc on dessine la HealthBar en PREMIER (pour qu'elle soit au-dessus).
-            // Et on dessine le Sprite en SECOND (pour qu'il soit en dessous).
-
             if (hp < MAX_HP) {
                 healthBar.draw(canvas);
             }

@@ -4,7 +4,6 @@ import ch.epfl.cs107.icmaze.Difficulty;
 import ch.epfl.cs107.icmaze.RandomGenerator;
 import ch.epfl.cs107.icmaze.actor.LogMonster;
 import ch.epfl.cs107.icmaze.actor.Portal;
-import ch.epfl.cs107.icmaze.area.AreaLogic;
 import ch.epfl.cs107.icmaze.area.ICMazeArea;
 import ch.epfl.cs107.play.engine.actor.Background;
 import ch.epfl.cs107.play.engine.actor.Foreground;
@@ -16,15 +15,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class SmallArea extends ICMazeArea {
-
     private int difficulty;
-    private final AreaLogic bossLogic;
     private final List<LogMonster> monsters = new ArrayList<>();
 
-    public SmallArea(int difficulty, int keyId, AreaLogic bossLogic) {
+    public SmallArea(int difficulty, int keyId) {
         super("SmallArea", 8, keyId);
         this.difficulty = difficulty;
-        this.bossLogic = bossLogic;
         createPortals();
     }
 
@@ -72,7 +68,6 @@ public class SmallArea extends ICMazeArea {
                 }
 
                 LogMonster monster = new LogMonster(this, Orientation.DOWN, pos, state);
-                monster.setSleepLogic(bossLogic);
                 registerActor(monster);
                 monsters.add(monster);
 
@@ -80,10 +75,6 @@ public class SmallArea extends ICMazeArea {
                 enemyCount++;
             }
         }
-    }
-    @Override
-    protected boolean  isChallengeResolved(){
-        return bossLogic.isActive();
     }
 
     @Override
