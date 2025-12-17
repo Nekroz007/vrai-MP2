@@ -35,7 +35,9 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     private final OrientedAnimation pickaxeAnimation;
 
     private final ICMazePlayerInteractionHandler handler = new ICMazePlayerInteractionHandler();
+
     private enum State {IDLE, MOVING, INTERACTING, ATTACKING_WITH_PICKAXE}
+
     private State state;
     private Portal currentPortal = null;
 
@@ -51,9 +53,10 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
         this.animation = new OrientedAnimation("icmaze/player", 4, this, anchor, orders,
                 4, 1, 2, 16, 32, true);
         this.pickaxeAnimation = new OrientedAnimation("icmaze/player.pickaxe",
-               5, this ,
-                anchor1 , orders1 , 4, 2, 2, 32, 32);
+                5, this,
+                anchor1, orders1, 4, 2, 2, 32, 32);
     }
+
     @Override
     public void acceptInteraction(ch.epfl.cs107.play.areagame.handler.AreaInteractionVisitor v, boolean isCellInteraction) {
         ((ICMazeInteractionVisitor) v).interactWith(this, isCellInteraction);
@@ -105,14 +108,22 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     }
 
     @Override
-    public boolean isViewInteractable() { return true; }
+    public boolean isViewInteractable() {
+        return true;
+    }
 
     @Override
-    public boolean takeCellSpace() { return true; }
+    public boolean takeCellSpace() {
+        return true;
+    }
 
-    public Portal getCurrentPortal() { return currentPortal; }
+    public Portal getCurrentPortal() {
+        return currentPortal;
+    }
 
-    public void resetPortal() { currentPortal = null; }
+    public void resetPortal() {
+        currentPortal = null;
+    }
 
     @Override
     public List<DiscreteCoordinates> getCurrentCells() {
@@ -125,13 +136,18 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     }
 
     @Override
-    public boolean wantsCellInteraction() { return true; }
+    public boolean wantsCellInteraction() {
+        return true;
+    }
+
     @Override
     public boolean wantsViewInteraction() {
         return state == State.INTERACTING || state == State.ATTACKING_WITH_PICKAXE;
     }
 
-    public void centerCamera() { getOwnerArea().setViewCandidate(this); }
+    public void centerCamera() {
+        getOwnerArea().setViewCandidate(this);
+    }
 
     private void moveIfPressed(Orientation orientation, Button b) {
         if (b.isDown() && !isDisplacementOccurs()) {
@@ -142,7 +158,7 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
 
     @Override
     public void draw(Canvas canvas) {
-        boolean blinking = immunityTimer > 0 && (int)(immunityTimer * 10) % 2 == 0;
+        boolean blinking = immunityTimer > 0 && (int) (immunityTimer * 10) % 2 == 0;
 
         if (!blinking) {
             switch (state) {
@@ -152,7 +168,6 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
         }
         super.draw(canvas);
     }
-
 
 
     private class ICMazePlayerInteractionHandler implements ICMazeInteractionVisitor {
@@ -200,13 +215,12 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
                     decreaseHealth(logMonster.getDamage());
                     immunityTimer = 3f;
                 }
-            }
-            else if (state == State.ATTACKING_WITH_PICKAXE) {
+            } else if (state == State.ATTACKING_WITH_PICKAXE) {
                 logMonster.decreaseHealth(1);
             }
         }
 
-        public void interactWith (FireProjectile fireProjectile, boolean isCellInteraction) {
+        public void interactWith(FireProjectile fireProjectile, boolean isCellInteraction) {
             if (state == State.ATTACKING_WITH_PICKAXE && !isCellInteraction) {
                 //TODO: Compléter l'interaction entre le player et le fireprojectile
             }
@@ -214,13 +228,12 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
 
         @Override
         public void interactWith(Boss boss, boolean isCellInteraction) {
-            // Si c'est une interaction de vue (touche d'interaction/attaque pressée), on attaque le boss
             if (!isCellInteraction) {
                 boss.receiveAttack();
             } else {
-                // Optionnel : Si le joueur touche le boss (contact), il prend des dégâts
                 decreaseHealth(1);
             }
         }
     }
 }
+
