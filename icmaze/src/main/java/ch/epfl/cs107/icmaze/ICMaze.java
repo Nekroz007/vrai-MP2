@@ -4,17 +4,20 @@ import ch.epfl.cs107.icmaze.actor.ICMazePlayer;
 import ch.epfl.cs107.icmaze.area.ICMazeArea;
 import ch.epfl.cs107.icmaze.area.LevelGenerator;
 import ch.epfl.cs107.icmaze.area.maps.*;
+import ch.epfl.cs107.icmaze.handler.DialogHandler;
 import ch.epfl.cs107.play.areagame.AreaGame;
+import ch.epfl.cs107.play.engine.actor.Dialog;
 import ch.epfl.cs107.play.io.FileSystem;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
 import ch.epfl.cs107.play.window.Keyboard;
 import ch.epfl.cs107.play.window.Window;
 
-public class ICMaze extends AreaGame {
+public class ICMaze extends AreaGame implements DialogHandler {
     private final String[] areas = {"icmaze/Spawn", "icmaze/Boss"};
     private ICMazePlayer player;
     private int areaIndex;
+    private Dialog activeDialog;
 
     private void generateHardCodedLevel() {
         ;
@@ -26,6 +29,9 @@ public class ICMaze extends AreaGame {
         ICMazeArea[] levels = LevelGenerator.generateLine(this, labyrinthCount);
 
         for (ICMazeArea area : levels) {
+            if (area instanceof Spawn) {
+                ((Spawn) area).setDialogHandler(this);
+            }
             addArea(area);
         }
     }
@@ -44,6 +50,23 @@ public class ICMaze extends AreaGame {
     @Override
     public void update(float deltaTime) {
         Keyboard keyboard = getWindow().getKeyboard();
+
+        if (activeDialog != null) {
+            if (getCurrentArea() != null) {
+                getCurrentArea().draw(getWindow());
+            }
+
+            if (keyboard.get(KeyBindings.NEXT_DIALOG).isPressed()) {
+                activeDialog.update(deltaTime);
+            }
+            activeDialog.draw(getWindow());
+
+            if (activeDialog.isCompleted()) {
+                activeDialog = null;
+            }
+            return;
+        }
+
         if (keyboard.get(KeyBindings.RESET_GAME).isPressed()){
             resetGame();
             return;
@@ -54,6 +77,12 @@ public class ICMaze extends AreaGame {
             resetGame();
         }
     }
+
+    @Override
+    public void publish(Dialog dialog) {
+        this.activeDialog = dialog;
+    }
+
     private void resetGame() {
         createAreas();
         areaIndex = 0;
@@ -69,7 +98,6 @@ public class ICMaze extends AreaGame {
         return 60;
     }
 
-
     @Override
     public String getTitle() {
         return "ICMaze";
@@ -83,16 +111,10 @@ public class ICMaze extends AreaGame {
         player.centerCamera();
     }
 
-    /**
-     * Change de zone si nécessaire
-     */
     public void switchArea() {
         if (player.getCurrentPortal() != null) {
             String destinArea = player.getCurrentPortal().getDestinationAreaName();
             DiscreteCoordinates destCoords = player.getCurrentPortal().getDestinationCoords();
-            System.out.print("coordonnées de la destination: ");
-            System.out.println(destCoords);
-            System.out.println("destination: " + destinArea);
 
             if (destinArea != null && destCoords != null) {
                 player.leaveArea();

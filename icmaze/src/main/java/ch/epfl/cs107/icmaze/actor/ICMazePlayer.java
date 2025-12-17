@@ -37,7 +37,6 @@ public class ICMazePlayer extends ICMazeActor implements Interactor {
     private final ICMazePlayerInteractionHandler handler = new ICMazePlayerInteractionHandler();
 
     private enum State {IDLE, MOVING, INTERACTING, ATTACKING_WITH_PICKAXE}
-
     private State state;
     private Portal currentPortal = null;
 

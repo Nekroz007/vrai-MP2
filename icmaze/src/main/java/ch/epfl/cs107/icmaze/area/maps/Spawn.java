@@ -5,16 +5,34 @@ import ch.epfl.cs107.icmaze.actor.collectable.Heart;
 import ch.epfl.cs107.icmaze.actor.collectable.Key;
 import ch.epfl.cs107.icmaze.actor.collectable.Pickaxe;
 import ch.epfl.cs107.icmaze.area.ICMazeArea;
+import ch.epfl.cs107.icmaze.handler.DialogHandler;
 import ch.epfl.cs107.play.engine.actor.Background;
+import ch.epfl.cs107.play.engine.actor.Dialog;
 import ch.epfl.cs107.play.engine.actor.Foreground;
 import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
 
 public class Spawn extends ICMazeArea {
 
+    private DialogHandler dialogHandler;
+    private boolean welcomeShown = false;
+
     public Spawn() {
         super("SmallArea", 8, Integer.MAX_VALUE);
         createPortals();
+    }
+
+    public void setDialogHandler(DialogHandler handler) {
+        this.dialogHandler = handler;
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+        if (!welcomeShown && dialogHandler != null) {
+            dialogHandler.publish(new Dialog("welcome"));
+            welcomeShown = true;
+        }
     }
 
     @Override

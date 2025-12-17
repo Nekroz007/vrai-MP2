@@ -13,3 +13,5 @@ public class AreaLogic extends LogicGate {
         active = state;
     }
 }
+
+
