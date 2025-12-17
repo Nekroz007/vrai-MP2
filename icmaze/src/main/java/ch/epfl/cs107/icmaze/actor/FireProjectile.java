@@ -51,6 +51,5 @@ public class FireProjectile extends Projectile{
                 stop();
             }
         }
-
     }
 }
