@@ -69,10 +69,12 @@ public abstract class Projectile extends MovableAreaEntity implements Interactor
     public boolean isViewInteractable(){
         return false;
     }
+
     @Override
     public boolean takeCellSpace(){
         return false;
     }
+
     @Override
     public void acceptInteraction(AreaInteractionVisitor v, boolean isCellInteraction) {
         ((ICMazeInteractionVisitor) v).interactWith(this, isCellInteraction);

@@ -9,6 +9,8 @@ import ch.epfl.cs107.play.math.DiscreteCoordinates;
 import ch.epfl.cs107.play.math.Orientation;
 import ch.epfl.cs107.play.window.Canvas;
 
+import java.util.List;
+
 //TODO: est ce que projectile est un ICMazeActor, ou un MovableAreaEntity ou un AreaEntity ?
 public class FireProjectile extends Projectile{
     private static final int DAMAGE = 1;
@@ -41,6 +43,21 @@ public class FireProjectile extends Projectile{
     @Override
     public void acceptInteraction(AreaInteractionVisitor v, boolean isCellInteraction) {
         ((ICMazeInteractionVisitor) v).interactWith(this, isCellInteraction);
+    }
+
+    @Override
+    public List<DiscreteCoordinates> getFieldOfViewCells() {
+        return null;
+    }
+
+    @Override
+    public boolean wantsViewInteraction() {
+        return false;
+    }
+
+    @Override
+    public boolean wantsCellInteraction() {
+        return true;
     }
 
     private class FireProjectileInteractionHandler implements ICMazeInteractionVisitor{
