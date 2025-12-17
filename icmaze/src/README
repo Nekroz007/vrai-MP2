@@ -1,0 +1,29 @@
+       ICMaze | Documentation
+
+. Lancement du jeu
+
+Pour lancer le jeu, exécutez la classe principale `ch.epfl.cs107.Play`
+
+. Contrôles
+
+* Flèches directionnelles: Déplacer le personnage.
+* ESPACE: Utilisation de la pioche pour attaquer ou casser des rochers.
+* R: Réinitialiser le jeu.
+* ENTRER: Dérouler le menu du dialogue de début.
+* TAB: Afficher les informations de l'aire (debug).
+
+Mécaniques de jeu et composants
+
+* Joueur (ICMazePlayer): Possède une barre de vie. Il meurt si ses points de vie atteignent 0. Il peut collecter des objets en passant dessus.
+* Portails et Clé: Les portails fermées nécessitent une clé présente dans leurs aires correspondantes pour les ouvrir et accèder à l'aire suivante.
+* Rochers: Les rochers bloquent le passage (constituant principale des labyrinthes). Si le joueur possède la Pioche, il peut les détruire au moyen de la touche ESPACE.
+* Combat:
+    * Ennemis: Le LogMonster dort mais se réveille si on l'approche. Les ennemis infligent des dégâts au contact.
+    * Boss: Situé dans la dernière zone, il doit être vaincu pour terminer le jeu. Faites attention, il lance des projectiles et peut se téleporter quand il subit une attaque.
+
+Scénario et Déroulement
+
+1.  Spawn: Le joueur apparaît dans le spawn où il trouvera une pioche qu'il pourra récupérer et une clé pour accéder à la prochaine aire.
+2.  Exploration: Le joueur traverse différentes aires (petite, moyenne, large). Il doit explorer les labyrinthes de chaque aire où il se trouve et ainsi trouver la clé qui lui permettra d'accéder à la prochaine aire.
+Par ailleurs, le joueur devra faire attention aux monstres qui peuplent les labyrinthes
+4.  Fin: Le joueur atteint l'aire du boss et se retrouve piégé, il est dont forcé à se battre contre un Boss. Après avoir vaincu le Boss, celui ci fai tomber la clé qui permettra au joueur de sortir de l'arène du boss.
