@@ -22,6 +22,7 @@ public abstract class ICMazeArea extends Area {
     protected final int size;
     protected final int keyId;
     protected final AreaGraph graph = new AreaGraph();
+    protected final AreaLogic logic = new AreaLogic();
     protected final Map<AreaPortals, Portal> portals = new HashMap<>();
 
     protected Orientation entryOrientation = null;
@@ -51,6 +52,8 @@ public abstract class ICMazeArea extends Area {
     public int getSize() {
         return size;
     }
+
+    protected abstract boolean isChallengeResolved();
 
     public abstract DiscreteCoordinates getPlayerSpawnPosition();
 
@@ -117,6 +120,12 @@ public abstract class ICMazeArea extends Area {
     public float getCameraScaleFactor() {
         float calculatedScale = size * DYNAMIC_SCALE_MULTIPLIER;
         return Math.min(calculatedScale, MAXIMUM_SCALE);
+    }
+
+    @Override
+    public void update (float deltaTime) {
+        super.update(deltaTime);
+        logic.setActive(isChallengeResolved());
     }
 
     protected void generateMazeAndPlaceRocks(int difficulty) {

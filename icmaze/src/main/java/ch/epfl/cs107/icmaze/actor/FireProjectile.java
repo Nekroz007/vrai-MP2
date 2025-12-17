@@ -69,6 +69,5 @@ public class FireProjectile extends Projectile{
                 stop(); // Le projectile disparaît après l'impact
             }
         }
-
     }
 }
